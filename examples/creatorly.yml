@@ -1,0 +1,19 @@
+version: '1.0'
+
+author:
+  name: 'Burak Kizilkaya'
+  email: 'burak.kizilkaya@example.com'
+
+project:
+  name: "Demo Boilerplate"
+  slug: "{{ creatorly.project.name }}"
+  description: "Demo Boilerplate"
+
+provider:
+  name: "github"
+  options:
+    url: ""
+    policies:
+      - "xyz"
+      - "abc"
+
