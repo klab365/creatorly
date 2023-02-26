@@ -1,8 +1,6 @@
 mod application;
 mod domain;
-
-use crate::application::create::service::CreateProjectInput;
-use crate::application::create::service::Service as CreateProjectService;
+mod infrastructure;
 
 fn main() {
     println!("Hello, world!");

@@ -1,0 +1,6 @@
+project_name: "DemoBoilerplate"
+description: "Demo Boilerplate"
+author_name: 'Burak Kizilkaya'
+author_email: 'burak.kizilkaya@example.com'
+license: ["MIT license", "BSD license", "ISC license", "Apache Software License 2.0", "GNU General Public License v3", "Not open source"]
+
