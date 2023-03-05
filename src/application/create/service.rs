@@ -44,7 +44,7 @@ impl<'a> Service<'a> {
 
 mod tests {
     use super::*;
-    use crate::application::create::interfaces::{FileTreeLoader, MockFileTreeLoader};
+    use crate::application::create::interfaces::MockFileTreeLoader;
 
     #[test]
     fn should_create_project() {
