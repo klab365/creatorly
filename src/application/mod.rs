@@ -1,2 +1,2 @@
-pub mod configuration;
+pub mod common;
 pub mod create;

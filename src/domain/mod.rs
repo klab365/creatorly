@@ -1,5 +1,2 @@
-pub mod author;
-pub mod folder_tree;
-pub mod provider;
-pub mod repo;
+pub mod file_tree;
 pub mod template_specification;

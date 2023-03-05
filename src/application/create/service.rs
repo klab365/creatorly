@@ -1,16 +1,16 @@
-use super::interfaces::FolderLoader;
-use crate::domain::folder_tree::Folder;
+use super::interfaces::FileTreeLoader;
+use crate::domain::file_tree::FileTree;
 
 pub struct CreateProjectInput {
     pub path: String,
 }
 
 pub struct Service<'a> {
-    folder_loader: &'a dyn FolderLoader,
+    folder_loader: &'a dyn FileTreeLoader,
 }
 
 impl<'a> Service<'a> {
-    pub fn new(folder_loader: &'a dyn FolderLoader) -> Self {
+    pub fn new(folder_loader: &'a dyn FileTreeLoader) -> Self {
         Self { folder_loader }
     }
 
@@ -44,22 +44,20 @@ impl<'a> Service<'a> {
 
 mod tests {
     use super::*;
-    use crate::application::create::interfaces::MockFolderLoader;
+    use crate::application::create::interfaces::{FileTreeLoader, MockFileTreeLoader};
 
     #[test]
     fn should_create_project() {
         // arrange
-        let mut folder_loader_mock = MockFolderLoader::new();
-        folder_loader_mock
+        let mut filetree_loader_mock = MockFileTreeLoader::new();
+        filetree_loader_mock
             .expect_load()
             .with(mockall::predicate::eq("path".to_string()))
             .times(1)
-            .returning(|_| Ok(Folder::new("path".to_string())));
+            .returning(|_| Ok(FileTree::new("path".to_string())));
 
-        let service = Service::new(&folder_loader_mock);
-        let input = CreateProjectInput {
-            path: "path".to_string(),
-        };
+        let service = Service::new(&filetree_loader_mock);
+        let input = CreateProjectInput { path: "path".to_string() };
 
         // act
         let result = service.create_project(input);
