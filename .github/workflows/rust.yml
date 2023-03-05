@@ -34,8 +34,6 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
 
     steps:
       - name: Checkout repository
