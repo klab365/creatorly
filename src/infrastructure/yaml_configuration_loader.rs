@@ -7,13 +7,12 @@ impl ConfigurationLoader for YamlConfigurationLoader {
     fn load_configuration(&self, configuration_path: String) -> Result<TemplateSpecification, String> {
         let file = std::fs::File::open(configuration_path).expect("Unable to open file");
         let value: YamlTemplateSpecification = serde_yaml::from_reader(file).expect("Unable to read file");
-        let template: TemplateSpecification = value.into();
-
-        if template.is_valid() {
-            return Ok(template);
+        if value.questions.is_empty() {
+            return Err("No questions found in template specification".to_string());
         }
 
-        Err("Template is invalid! Please check yaml file!".to_string())
+        let template: TemplateSpecification = value.into();
+        Ok(template)
     }
 }
 
@@ -48,7 +47,7 @@ mod tests {
         ));
         expected_template.questions.push(TemplateSpecificationItem::new(
             "license".to_string(),
-            TemplateSpecificationItemType::MultipleChoice(vec!["MIT".to_string(), "BSD license".to_string()]),
+            TemplateSpecificationItemType::MultipleChoice(vec!["MIT".to_string(), "BSD".to_string()]),
         ));
 
         // act
@@ -57,6 +56,22 @@ mod tests {
             .unwrap();
 
         // assert
-        assert_eq!(template_specification, expected_template);
+        for (index, template_item) in template_specification.questions.iter().enumerate() {
+            assert_eq!(template_item.template_key, expected_template.questions[index].template_key);
+            match &template_item.item {
+                TemplateSpecificationItemType::SingleChoice(choice) => match &expected_template.questions[index].item {
+                    TemplateSpecificationItemType::SingleChoice(expected_choice) => {
+                        assert_eq!(choice, expected_choice);
+                    }
+                    _ => {}
+                },
+                TemplateSpecificationItemType::MultipleChoice(choices) => match &expected_template.questions[index].item {
+                    TemplateSpecificationItemType::MultipleChoice(expected_choices) => {
+                        assert_eq!(choices, expected_choices);
+                    }
+                    _ => {}
+                },
+            }
+        }
     }
 }

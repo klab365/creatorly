@@ -18,7 +18,7 @@ impl TemplateSpecification {
 /// A template specification item. It contains the template key, the type and the answer.
 #[derive(Debug, PartialEq)]
 pub struct TemplateSpecificationItem {
-    item: TemplateSpecificationItemType,
+    pub item: TemplateSpecificationItemType,
     pub template_key: String,
     pub answer: String,
 }

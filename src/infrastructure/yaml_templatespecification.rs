@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
@@ -8,7 +9,7 @@ use crate::domain::template_specification::{TemplateSpecification, TemplateSpeci
 #[derive(Debug, Serialize, Deserialize)]
 pub struct YamlTemplateSpecification {
     #[serde(flatten)]
-    pub questions: HashMap<String, Value>,
+    pub questions: IndexMap<String, Value>,
 }
 
 impl Into<TemplateSpecification> for YamlTemplateSpecification {
@@ -48,7 +49,7 @@ mod tests {
 
     #[test]
     fn test_yaml_template_specification_to_template_spec() {
-        let mut yaml_template_specification = YamlTemplateSpecification { questions: HashMap::new() };
+        let mut yaml_template_specification = YamlTemplateSpecification { questions: IndexMap::new() };
         yaml_template_specification
             .questions
             .insert("project_name".to_string(), Value::String("DemoBoilerplate".to_string()));
