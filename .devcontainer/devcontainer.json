@@ -15,7 +15,8 @@
 			"extensions": [
 				"GitHub.copilot",
 				"mhutchie.git-graph",
-				"Swellaby.vscode-rust-test-adapter"
+				"Swellaby.vscode-rust-test-adapter",
+				"eamodio.gitlens"
 			]
 		}
 	}

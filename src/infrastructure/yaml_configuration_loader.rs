@@ -16,13 +16,10 @@ impl ConfigurationLoader for YamlConfigurationLoader {
     }
 }
 
+#[cfg(test)]
 mod tests {
-    use serde_yaml::Value;
-
-    use crate::domain::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
-
     use super::*;
-    use std::{collections::HashMap, hash::Hash};
+    use crate::domain::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
 
     #[test]
     fn test_load_configuration() {

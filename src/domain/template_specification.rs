@@ -67,6 +67,7 @@ pub enum TemplateSpecificationItemType {
     MultipleChoice(Vec<String>),
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

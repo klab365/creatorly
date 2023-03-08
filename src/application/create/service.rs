@@ -1,5 +1,4 @@
 use super::interfaces::FileTreeLoader;
-use crate::domain::file_tree::FileTree;
 
 pub struct CreateProjectInput {
     pub path: String,
@@ -22,7 +21,7 @@ impl<'a> Service<'a> {
         let folder = self.folder_loader.load(&input.path);
         match folder {
             Ok(folder) => {
-                println!("folder: {:?}", folder);
+                println!("folder: {folder:?}");
             }
             Err(error) => {
                 return Err(error);
@@ -36,15 +35,12 @@ impl<'a> Service<'a> {
         println!("project created!");
         Ok(())
     }
-
-    pub fn template_project(&self, configuration: String) -> Result<(), String> {
-        Ok(())
-    }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
-    use crate::application::create::interfaces::MockFileTreeLoader;
+    use crate::{application::create::interfaces::MockFileTreeLoader, domain::file_tree::FileTree};
 
     #[test]
     fn should_create_project() {

@@ -26,6 +26,7 @@ impl FileTree {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
