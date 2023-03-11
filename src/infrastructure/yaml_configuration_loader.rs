@@ -48,7 +48,9 @@ mod tests {
         ));
 
         // act
-        let template_specification = sut.load_configuration("src/infrastructure/test_data/test_template_spec.yml".to_string()).unwrap();
+        let template_specification = sut
+            .load_configuration("src/infrastructure/test_data/test_template_spec.yml".to_string())
+            .unwrap();
 
         // assert
         for (index, template_item) in template_specification.questions.iter().enumerate() {

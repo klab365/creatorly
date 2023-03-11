@@ -1,5 +1,5 @@
 /// The template specification. It contains the questions, which are asked.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecification {
     pub questions: Vec<TemplateSpecificationItem>,
 }
@@ -16,7 +16,7 @@ impl TemplateSpecification {
 }
 
 /// A template specification item. It contains the template key, the type and the answer.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecificationItem {
     pub item: TemplateSpecificationItemType,
     pub template_key: String,
@@ -58,7 +58,7 @@ impl TemplateSpecificationItem {
 }
 
 /// The type of the template specification item.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TemplateSpecificationItemType {
     /// A single choice item.
     SingleChoice(String),
