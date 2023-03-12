@@ -17,7 +17,9 @@ impl From<YamlTemplateSpecification> for TemplateSpecification {
         for (key, value) in yaml_template_specification.questions {
             match value {
                 Value::String(choice) => {
-                    template.questions.push(TemplateSpecificationItem::new(key, TemplateSpecificationItemType::SingleChoice(choice)));
+                    template
+                        .questions
+                        .push(TemplateSpecificationItem::new(key, TemplateSpecificationItemType::SingleChoice(choice)));
                 }
                 Value::Sequence(choices) => {
                     let mut choices_tmp: Vec<String> = Vec::new();
