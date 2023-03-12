@@ -1,5 +1,5 @@
 use crate::domain::{
-    file_tree::FileList,
+    file_list::FileList,
     template_specification::{TemplateSpecification, TemplateSpecificationItem},
 };
 

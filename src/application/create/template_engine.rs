@@ -1,6 +1,6 @@
 use crate::{
     application::common::interfaces::Os,
-    domain::{file_tree::FileList, template_specification::TemplateSpecification},
+    domain::{file_list::FileList, template_specification::TemplateSpecification},
 };
 
 use super::interfaces::{FileTreeLoader, TemplateRenderer};

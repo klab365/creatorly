@@ -6,7 +6,7 @@ use super::{
 };
 use crate::{
     application::common::interfaces::{ConfigurationLoader, Os},
-    domain::{file_tree::FileList, template_specification::TemplateSpecification},
+    domain::{file_list::FileList, template_specification::TemplateSpecification},
 };
 
 pub struct CreateProjectInput {
@@ -63,6 +63,9 @@ impl<'a> Service<'a> {
         // render files on destination folder
         self.template_engine.render(&input.destination_path, template_configuration)?;
 
+        // clean up creation
+        self.clean_up();
+
         println!("project created!");
         Ok(())
     }
@@ -73,6 +76,7 @@ impl<'a> Service<'a> {
             .files
             .iter()
             .find(|file| file.contains("creatorly.yaml") || file.contains("creatorly.yml"));
+
         if found_file.is_none() {
             return Err("creatorly.yaml not found".to_string());
         }
@@ -124,6 +128,10 @@ impl<'a> Service<'a> {
         }
 
         println!("answered questions: {template_specification:?}")
+    }
+
+    fn clean_up(&self) {
+        println!("cleaning up");
     }
 }
 
