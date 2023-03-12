@@ -21,8 +21,8 @@
             },
             "args": [
                 "create",
-                "src",
-                "target"
+                "assets/example_project",
+                "target/new_proj"
             ],
             "cwd": "${workspaceFolder}"
         },

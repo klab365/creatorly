@@ -19,7 +19,7 @@ pub struct Service<'a> {
     configuration_loader: &'a dyn ConfigurationLoader,
     file_system: &'a dyn Os,
     prompt: &'a dyn Prompt,
-    template_engine: &'a TemplateEngine,
+    template_engine: &'a TemplateEngine<'a>,
 }
 
 impl<'a> Service<'a> {
@@ -58,10 +58,10 @@ impl<'a> Service<'a> {
         self.answer_questions(&mut template_configuration);
 
         // move files to destination folder
-        self.move_files_to_destination_folder(input.destination_path, files.unwrap());
+        self.move_files_to_destination_folder(&input.destination_path, files.unwrap());
 
         // render files on destination folder
-        // self.template_engine.render(input.destination_path.clone(), template_configuration.unwrap());
+        self.template_engine.render(&input.destination_path, template_configuration)?;
 
         println!("project created!");
         Ok(())
@@ -100,7 +100,7 @@ impl<'a> Service<'a> {
         Ok(files.unwrap())
     }
 
-    fn move_files_to_destination_folder(&self, destination_path: String, files: FileList) {
+    fn move_files_to_destination_folder(&self, destination_path: &String, files: FileList) {
         println!("moving files to destination folder: {destination_path:?}");
 
         let result = self.file_system.clear_folder(destination_path.clone());

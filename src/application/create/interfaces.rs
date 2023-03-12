@@ -1,4 +1,7 @@
-use crate::domain::{file_tree::FileList, template_specification::TemplateSpecificationItem};
+use crate::domain::{
+    file_tree::FileList,
+    template_specification::{TemplateSpecification, TemplateSpecificationItem},
+};
 
 #[cfg(test)]
 use mockall::automock;
@@ -10,7 +13,7 @@ pub trait FileTreeLoader {
 
 #[cfg_attr(test, automock)]
 pub trait TemplateRenderer {
-    fn render(&self);
+    fn render(&self, input: String, config: TemplateSpecification) -> Result<String, String>;
 }
 
 #[cfg_attr(test, automock)]

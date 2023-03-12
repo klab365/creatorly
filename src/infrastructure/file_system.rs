@@ -18,4 +18,19 @@ impl Os for FileSystem {
 
         Ok(())
     }
+
+    fn replace_file(&self, source_path: String, target_path: String, target_content: String) -> Result<(), String> {
+        let target_path = PathBuf::from(target_path);
+        let target_dir = target_path.parent().expect("issue to get dir").to_str().expect("issue to str");
+
+        std::fs::create_dir_all(target_dir).expect("issue to create target directory");
+        std::fs::write(target_path, target_content).expect("issue to write");
+
+        Ok(())
+    }
+
+    fn read_file(&self, path: String) -> Result<String, String> {
+        let content = fs::read_to_string(path).expect("issue to read file");
+        Ok(content)
+    }
 }
