@@ -21,4 +21,7 @@ pub trait Os {
 
     // replace file
     fn replace_file(&self, source_path: String, target_path: String, target_content: String) -> Result<(), String>;
+
+    // write file
+    fn write_file(&self, path: String, content: String) -> Result<(), String>;
 }

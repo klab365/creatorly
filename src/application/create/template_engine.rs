@@ -20,28 +20,29 @@ impl<'a> TemplateEngine<'a> {
         }
     }
 
-    pub fn render(&self, _destination_path: &String, _template_specification: TemplateSpecification) -> Result<(), String> {
+    pub fn render(
+        &self,
+        input_root_path: &String,
+        destination_path: &String,
+        file_list: &FileList,
+        _template_specification: TemplateSpecification,
+    ) -> Result<(), String> {
         println!("rendering....");
 
-        let file_list: Result<FileList, String> = self.file_loader.load(_destination_path);
-        if let Err(error) = file_list {
-            println!("error: {error:?}");
-            return Err(error);
-        }
-
-        for file in file_list.unwrap().files {
+        for file in file_list.clone().files {
             println!("templateing: {file:?}");
 
             // render file name
-            let renderd_file_name = self.template_renderer.render(file.clone(), _template_specification.clone())?;
+            let mut renderd_file_name = self.template_renderer.render(file.clone(), _template_specification.clone())?;
+            renderd_file_name = renderd_file_name.replace(input_root_path, destination_path);
 
             // render file content
             let content = self.file_system.read_file(file.clone()).expect("issue to read file");
             let renderd_file_content = self.template_renderer.render(content, _template_specification.clone())?;
 
             self.file_system
-                .replace_file(file, renderd_file_name, renderd_file_content)
-                .expect("issue to replace file");
+                .write_file(renderd_file_name, renderd_file_content)
+                .expect("issue to write file")
         }
 
         Ok(())

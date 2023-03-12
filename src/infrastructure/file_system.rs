@@ -33,4 +33,14 @@ impl Os for FileSystem {
         let content = fs::read_to_string(path).expect("issue to read file");
         Ok(content)
     }
+
+    fn write_file(&self, path: String, content: String) -> Result<(), String> {
+        let path = PathBuf::from(path);
+        let dir = path.parent().expect("issue to get dir").to_str().expect("issue to str");
+
+        std::fs::create_dir_all(dir).expect("issue to create target directory");
+        std::fs::write(path, content).expect("issue to write");
+
+        Ok(())
+    }
 }

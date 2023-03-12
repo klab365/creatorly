@@ -49,19 +49,20 @@ impl<'a> Service<'a> {
         }
 
         // load file list
-        let files = self.load_files(&input.input_path);
+        let mut files = self.load_files(&input.input_path)?;
 
         // load template specification
-        let mut template_configuration = self.get_template_configuration(files.clone().unwrap())?;
+        let mut template_configuration = self.get_template_configuration(&mut files)?;
 
         // get answer for question
         self.answer_questions(&mut template_configuration);
 
         // move files to destination folder
-        self.move_files_to_destination_folder(&input.destination_path, files.unwrap());
+        // self.move_files_to_destination_folder(&input.destination_path, files.unwrap());
 
         // render files on destination folder
-        self.template_engine.render(&input.destination_path, template_configuration)?;
+        self.template_engine
+            .render(&input.input_path, &input.destination_path, &files, template_configuration)?;
 
         // clean up creation
         self.clean_up();
@@ -71,18 +72,23 @@ impl<'a> Service<'a> {
     }
 
     // get template configuration from the template path
-    fn get_template_configuration(&self, files: FileList) -> Result<TemplateSpecification, String> {
+    fn get_template_configuration(&self, files: &mut FileList) -> Result<TemplateSpecification, String> {
         let found_file = files
             .files
             .iter()
-            .find(|file| file.contains("creatorly.yaml") || file.contains("creatorly.yml"));
+            .enumerate()
+            .find(|file| file.1.contains("creatorly.yaml") || file.1.contains("creatorly.yml"));
 
         if found_file.is_none() {
             return Err("creatorly.yaml not found".to_string());
         }
 
         let found_file = found_file.unwrap();
-        self.configuration_loader.load_configuration(found_file.to_string())
+        let specification = self.configuration_loader.load_configuration(found_file.1.to_string())?;
+
+        files.files.remove(found_file.0);
+
+        Ok(specification)
     }
 
     fn load_files(&self, input_path: &str) -> Result<FileList, String> {
@@ -131,7 +137,8 @@ impl<'a> Service<'a> {
     }
 
     fn clean_up(&self) {
-        println!("cleaning up");
+        print!("cleaning up...");
+        println!("done!")
     }
 }
 
