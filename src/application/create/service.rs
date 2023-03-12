@@ -52,13 +52,10 @@ impl<'a> Service<'a> {
         let files = self.load_files(&input.input_path);
 
         // load template specification
-        let template_configuration = self.get_template_configuration(files.clone().unwrap());
-        if let Err(error) = template_configuration {
-            return Err(error);
-        }
+        let mut template_configuration = self.get_template_configuration(files.clone().unwrap())?;
 
         // get answer for question
-        self.answer_questions(&mut template_configuration.unwrap());
+        self.answer_questions(&mut template_configuration);
 
         // move files to destination folder
         self.move_files_to_destination_folder(input.destination_path, files.unwrap());
@@ -81,8 +78,7 @@ impl<'a> Service<'a> {
         }
 
         let found_file = found_file.unwrap();
-        let result = self.configuration_loader.load_configuration(found_file.to_string());
-        result
+        self.configuration_loader.load_configuration(found_file.to_string())
     }
 
     fn load_files(&self, input_path: &str) -> Result<FileList, String> {
