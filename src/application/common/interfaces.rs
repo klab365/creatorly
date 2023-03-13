@@ -9,6 +9,7 @@ pub trait ConfigurationLoader {
 }
 
 // interface for the file system
+#[cfg_attr(test, automock)]
 pub trait Os {
     // Clear the folder and his subfolders
     fn clear_folder(&self, path: String) -> Result<(), String>;

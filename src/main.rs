@@ -49,7 +49,7 @@ fn main() {
             let prompt: CliPrompt = CliPrompt {};
 
             let liquid_template_renderer: LiquidTemplateRenderer = LiquidTemplateRenderer {};
-            let template_engine: TemplateEngine = TemplateEngine::new(&liquid_template_renderer, &file_tree_loader, &file_system);
+            let template_engine: TemplateEngine = TemplateEngine::new(&liquid_template_renderer, &file_system);
 
             let input: CreateProjectInput = CreateProjectInput {
                 input_path: _create.template_path,
