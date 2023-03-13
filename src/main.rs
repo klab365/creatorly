@@ -10,7 +10,8 @@ use application::create::{
 };
 use clap::{command, Args, Parser, Subcommand};
 use infrastructure::{
-    cli_prompt::CliPrompt, file_system::FileSystem, folder_loader::local_file_loader::LocalFileLoader, yaml_configuration_loader::YamlConfigurationLoader,
+    cli_prompt::CliPrompt, file_system::FileSystem, folder_loader::local_file_loader::LocalFileLoader, liquid_template::LiquidTemplateRenderer,
+    yaml_configuration_loader::YamlConfigurationLoader,
 };
 
 #[derive(Parser)]
@@ -46,7 +47,10 @@ fn main() {
             let configuration_loader: YamlConfigurationLoader = YamlConfigurationLoader {};
             let file_system: FileSystem = FileSystem {};
             let prompt: CliPrompt = CliPrompt {};
-            let template_engine: TemplateEngine = TemplateEngine::new();
+
+            let liquid_template_renderer: LiquidTemplateRenderer = LiquidTemplateRenderer {};
+            let template_engine: TemplateEngine = TemplateEngine::new(&liquid_template_renderer, &file_tree_loader, &file_system);
+
             let input: CreateProjectInput = CreateProjectInput {
                 input_path: _create.template_path,
                 destination_path: _create.destination_path,
