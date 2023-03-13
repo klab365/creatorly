@@ -15,6 +15,12 @@ impl TemplateSpecification {
     }
 }
 
+impl Default for TemplateSpecification {
+    fn default() -> Self {
+        TemplateSpecification::new()
+    }
+}
+
 /// A template specification item. It contains the template key, the type and the answer.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecificationItem {

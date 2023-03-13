@@ -23,7 +23,7 @@ impl<'a> TemplateEngine<'a> {
     pub fn render(
         &self,
         input_root_path: &String,
-        destination_path: &String,
+        destination_path: &str,
         file_list: &FileList,
         _template_specification: TemplateSpecification,
     ) -> Result<(), String> {
