@@ -55,9 +55,6 @@ impl<'a> CreateService<'a> {
         self.template_engine
             .render_and_push(&input.input_path, &input.destination_path, &files, template_configuration)?;
 
-        // clean up
-        self.clean_up();
-
         println!("project created!");
         Ok(())
     }
@@ -105,13 +102,6 @@ impl<'a> CreateService<'a> {
         for item in &mut template_specification.questions {
             self.prompt.get_answer(item)
         }
-
-        println!("answered questions: {template_specification:?}")
-    }
-
-    fn clean_up(&self) {
-        print!("cleaning up...");
-        println!("done!")
     }
 }
 

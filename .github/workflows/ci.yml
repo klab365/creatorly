@@ -31,8 +31,30 @@ jobs:
           command: fmt
           args: --all -- --check
 
+  test:
+    name: Test
+    needs: format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --verbose
+
   clippy:
     name: Clippy
+    needs: [format, test]
     runs-on: ubuntu-latest
 
     steps:
@@ -52,28 +74,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --verbose --release -- -D warnings
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --verbose
-
   bench:
     name: Benchmark
+    needs: [format, test, clippy]
     runs-on: ubuntu-latest
 
     steps:

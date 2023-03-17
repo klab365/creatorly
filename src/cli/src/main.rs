@@ -12,7 +12,7 @@ use infrastructure::{
 
 #[derive(Parser)]
 #[command(author, version)]
-#[command(about = "creatorly - a simple cli to generate repos from templates", long_about = "")]
+#[command(about = "creatorly - a simple cli to generate projects from templates")]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,

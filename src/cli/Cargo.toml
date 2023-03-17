@@ -1,5 +1,5 @@
 [package]
-name = "creatorly_cli"
+name = "creatorly"
 version.workspace = true
 authors.workspace = true
 edition = "2021"

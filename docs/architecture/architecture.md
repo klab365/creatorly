@@ -9,5 +9,3 @@ Creatorly is a application, which makes the creation of projects easier. The app
 ## Level 1 - Whitebox creatorly
 
 ![component diagram](.images/component.drawio.svg)
-
-## Level 2 - Whitebox application
