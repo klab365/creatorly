@@ -47,8 +47,8 @@ fn main() {
             let template_engine: TemplateEngine = TemplateEngine::new(&liquid_template_renderer, &file_system);
 
             let input: CreateProjectInput = CreateProjectInput {
-                input_path: _create.template_path,
-                destination_path: _create.destination_path,
+                input_path: _create.template_path.trim_end_matches('/').to_string(),
+                destination_path: _create.destination_path.trim_end_matches('/').to_string(),
             };
             let service: CreateService = CreateService::new(&file_tree_loader, &configuration_loader, &prompt, &template_engine);
             service.create_project(input).unwrap();

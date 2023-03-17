@@ -7,6 +7,10 @@ use application::create::{
 
 pub struct CliPrompt {}
 
+impl CliPrompt {
+    const DEFAULT_INDEX_MULTIPLE_CHOICE: usize = 1;
+}
+
 impl Prompt for CliPrompt {
     fn get_answer(&self, template_specification_item: &mut TemplateSpecificationItem) {
         match &template_specification_item.item {
@@ -40,7 +44,7 @@ impl Prompt for CliPrompt {
                 let mut answer = String::new();
                 let stdin = io::stdin();
                 stdin.read_line(&mut answer).expect("issue to read line");
-                let index = answer.trim().parse::<usize>().expect("answer is not a number!");
+                let index = answer.trim().parse::<usize>().unwrap_or(CliPrompt::DEFAULT_INDEX_MULTIPLE_CHOICE);
 
                 if index - 1 > choices.len() {
                     println!("index doesn't exist");
