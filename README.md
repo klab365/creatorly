@@ -14,7 +14,5 @@ tbd
 
 ## Documentation
 
-tbd
-
-* [Usage]()
-* [Architecture]()
+* [Usage](docs/usage/usage.md)
+* [Architecture](docs/architecture/architecture.md)

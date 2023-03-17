@@ -7,8 +7,9 @@ use application::create::{
 use clap::{command, Args, Parser, Subcommand};
 use infrastructure::{
     configuration_loader::yaml_configuration_loader::YamlConfigurationLoader, file_system::FileSystem, folder_loader::local_file_loader::LocalFileLoader,
-    prompt::cli_prompt::CliPrompt, template_renderer::liquid_template::LiquidTemplateRenderer,
+    logger::setup_logger, prompt::cli_prompt::CliPrompt, template_renderer::liquid_template::LiquidTemplateRenderer,
 };
+use log::error;
 
 #[derive(Parser)]
 #[command(author, version)]
@@ -34,6 +35,8 @@ struct Create {
 }
 
 fn main() {
+    setup_logger();
+
     let cli = Cli::parse();
 
     match cli.command {
@@ -54,7 +57,7 @@ fn main() {
             service.create_project(input).unwrap();
         }
         None => {
-            println!("command not found");
+            error!("command not found");
         }
     }
 }

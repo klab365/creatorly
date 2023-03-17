@@ -10,3 +10,4 @@ edition = "2021"
 clap = { version = "4.1.8", features = ["derive"] }
 application = { path = "../application" }
 infrastructure = { path = "../infrastructure" }
+log = { workspace = true }

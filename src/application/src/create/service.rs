@@ -5,6 +5,8 @@ use super::{
     template_specification::TemplateSpecification,
 };
 
+use log::info;
+
 pub struct CreateProjectInput {
     pub input_path: String,
     pub destination_path: String,
@@ -55,7 +57,7 @@ impl<'a> CreateService<'a> {
         self.template_engine
             .render_and_push(&input.input_path, &input.destination_path, &files, template_configuration)?;
 
-        println!("project created!");
+        info!("project created!");
         Ok(())
     }
 
@@ -82,17 +84,11 @@ impl<'a> CreateService<'a> {
     fn load_files(&self, input_path: &str) -> Result<FileList, String> {
         let files: Result<FileList, String> = self.folder_loader.load(input_path);
         if let Err(error) = files {
-            println!("error: {error:?}");
             return Err(error);
         }
 
         if let Ok(files) = files.clone() {
-            let mut counter_found_files = 0;
-            for file in files.files {
-                println!("found file: {file:?}");
-                counter_found_files += 1;
-            }
-            println!("found {counter_found_files} files");
+            info!("found {} files on template project", files.files.len());
         }
 
         Ok(files.unwrap())

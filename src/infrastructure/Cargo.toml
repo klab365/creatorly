@@ -13,3 +13,5 @@ serde_yaml = "0.9.17"
 indexmap = { version = "1.9.2", features = ["serde-1"] }
 walkdir = "2.3.2"
 liquid = "0.26.1"
+simple_logger = "4.0"
+log = { workspace = true }
