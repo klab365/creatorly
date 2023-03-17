@@ -1,19 +1,16 @@
+use application::create::{interfaces::TemplateRenderer, template_specification::TemplateSpecification};
 use liquid::model::Value;
-
-use crate::{application::create::interfaces::TemplateRenderer, domain::template_specification::TemplateSpecification};
 
 pub struct LiquidTemplateRenderer {}
 
-impl From<TemplateSpecification> for liquid::Object {
-    fn from(value: TemplateSpecification) -> Self {
-        let mut data = liquid::Object::new();
+fn map_to_liquid_object(value: TemplateSpecification) -> liquid::Object {
+    let mut data = liquid::Object::new();
 
-        for template_item in value.questions {
-            data.insert(template_item.template_key.into(), Value::scalar(template_item.answer.to_string()));
-        }
-
-        data
+    for template_item in value.questions {
+        data.insert(template_item.template_key.into(), Value::scalar(template_item.answer.to_string()));
     }
+
+    data
 }
 
 impl TemplateRenderer for LiquidTemplateRenderer {
@@ -23,7 +20,7 @@ impl TemplateRenderer for LiquidTemplateRenderer {
             return Err(error.to_string());
         }
 
-        let data: liquid::Object = config.into();
+        let data: liquid::Object = map_to_liquid_object(config);
 
         let output = template.unwrap().render(&data);
         if let Err(error) = output {
@@ -36,7 +33,7 @@ impl TemplateRenderer for LiquidTemplateRenderer {
 
 #[cfg(test)]
 mod tests {
-    use crate::domain::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
+    use application::create::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
 
     use super::*;
 

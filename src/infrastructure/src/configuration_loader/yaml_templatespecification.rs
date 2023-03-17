@@ -1,8 +1,7 @@
+use application::create::template_specification::{TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType};
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
-
-use crate::domain::template_specification::{TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct YamlTemplateSpecification {

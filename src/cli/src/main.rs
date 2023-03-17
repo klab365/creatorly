@@ -1,23 +1,18 @@
 #![allow(dead_code)]
 
-mod application;
-mod domain;
-mod infrastructure;
-
 use application::create::{
-    service::{CreateProjectInput, Service},
+    service::{CreateProjectInput, CreateService},
     template_engine::TemplateEngine,
 };
 use clap::{command, Args, Parser, Subcommand};
 use infrastructure::{
-    cli_prompt::CliPrompt, file_system::FileSystem, folder_loader::local_file_loader::LocalFileLoader, liquid_template::LiquidTemplateRenderer,
-    yaml_configuration_loader::YamlConfigurationLoader,
+    configuration_loader::yaml_configuration_loader::YamlConfigurationLoader, file_system::FileSystem, folder_loader::local_file_loader::LocalFileLoader,
+    prompt::cli_prompt::CliPrompt, template_renderer::liquid_template::LiquidTemplateRenderer,
 };
 
 #[derive(Parser)]
 #[command(author, version)]
 #[command(about = "creatorly - a simple cli to generate repos from templates", long_about = "")]
-
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -43,7 +38,7 @@ fn main() {
 
     match cli.command {
         Some(Commands::Create(_create)) => {
-            let file_tree_loader: LocalFileLoader = LocalFileLoader::new();
+            let file_tree_loader: LocalFileLoader = LocalFileLoader::default();
             let configuration_loader: YamlConfigurationLoader = YamlConfigurationLoader {};
             let file_system: FileSystem = FileSystem {};
             let prompt: CliPrompt = CliPrompt {};
@@ -55,8 +50,7 @@ fn main() {
                 input_path: _create.template_path,
                 destination_path: _create.destination_path,
             };
-            let service: Service = Service::new(&file_tree_loader, &configuration_loader, &file_system, &prompt, &template_engine);
-
+            let service: CreateService = CreateService::new(&file_tree_loader, &configuration_loader, &prompt, &template_engine);
             service.create_project(input).unwrap();
         }
         None => {

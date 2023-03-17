@@ -2,6 +2,12 @@
 
 ## Overview
 
-Creatorly is a application, which makes the creation of repositories easier. The application reads from a template repository or from a template folder and creates a new repository from it. This repository is transferred to the corresponding Git-Online service (Github, Gitlab or AzureDevops). In addition, the corresponding policies and settings for the repository are set at the Git-Online service.
+Creatorly is a application, which makes the creation of projects easier. The application reads from a template project or from a template folder and creates a project folder from it.
 
 ![overview](.images/overview.drawio.svg)
+
+## Level 1 - Whitebox creatorly
+
+![component diagram](.images/component.drawio.svg)
+
+## Level 2 - Whitebox application

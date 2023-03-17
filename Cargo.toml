@@ -1,18 +1,11 @@
-[package]
-name = "creatorly"
+[workspace]
+members = ["src/application", "src/infrastructure", "src/cli"]
+
+[workspace.package]
+authors = ["Burak Kizilkaya <burak.kizilkaya@outlook.com>"]
 version = "0.0.0"
-edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dev-dependencies]
+[workspace.dev-dependencies]
 mockall = "0.11.3"
-
-[dependencies]
-async-trait = "0.1.64"
-serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9.17"
-indexmap = { version = "1.9.2", features = ["serde-1"] }
-walkdir = "2.3.2"
-clap = { version = "4.1.8", features = ["derive"] }
-liquid = "0.26.1"

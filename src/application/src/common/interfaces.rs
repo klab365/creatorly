@@ -1,12 +1,5 @@
-use crate::domain::template_specification::TemplateSpecification;
-
 #[cfg(test)]
 use mockall::automock;
-
-#[cfg_attr(test, automock)]
-pub trait ConfigurationLoader {
-    fn load_configuration(&self, configuration_path: String) -> Result<TemplateSpecification, String>;
-}
 
 // interface for the file system
 #[cfg_attr(test, automock)]

@@ -1,5 +1,6 @@
-use crate::infrastructure::yaml_templatespecification::YamlTemplateSpecification;
-use crate::{application::common::interfaces::ConfigurationLoader, domain::template_specification::TemplateSpecification};
+use application::create::{interfaces::ConfigurationLoader, template_specification::TemplateSpecification};
+
+use super::yaml_templatespecification::YamlTemplateSpecification;
 
 pub struct YamlConfigurationLoader {}
 
@@ -18,11 +19,18 @@ impl ConfigurationLoader for YamlConfigurationLoader {
 
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+
+    use application::create::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
+
     use super::*;
-    use crate::domain::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
 
     #[test]
     fn test_load_configuration() {
+        let mut yaml_config_file = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        yaml_config_file.push("resources/test");
+        yaml_config_file.push("test_template_spec.yml");
+
         // arrange
         let sut = YamlConfigurationLoader {};
         let mut expected_template: TemplateSpecification = TemplateSpecification::new();
@@ -48,9 +56,7 @@ mod tests {
         ));
 
         // act
-        let template_specification = sut
-            .load_configuration("src/infrastructure/test_data/test_template_spec.yml".to_string())
-            .unwrap();
+        let template_specification = sut.load_configuration(yaml_config_file.to_string_lossy().to_string()).unwrap();
 
         // assert
         for (index, template_item) in template_specification.questions.iter().enumerate() {

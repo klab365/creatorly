@@ -8,11 +8,6 @@ impl TemplateSpecification {
     pub fn new() -> Self {
         Self { questions: Vec::new() }
     }
-
-    /// Returns true, if all questions are valid. Otherwise false.
-    pub fn is_valid(&self) -> bool {
-        self.questions.iter().all(|q| q.is_valid())
-    }
 }
 
 impl Default for TemplateSpecification {
@@ -35,14 +30,6 @@ impl TemplateSpecificationItem {
             item,
             template_key,
             answer: String::new(),
-        }
-    }
-
-    /// checks if the answer is valid
-    pub fn is_valid(&self) -> bool {
-        match &self.item {
-            TemplateSpecificationItemType::SingleChoice(_) => true,
-            TemplateSpecificationItemType::MultipleChoice(answers) => answers.contains(&self.answer),
         }
     }
 
@@ -92,7 +79,6 @@ mod tests {
         assert_eq!(sut.questions[0].template_key, "project_name");
         assert_eq!(sut.questions[0].get_single_choice(), Some(&String::from("DemoBoilerplate")));
         assert_eq!(sut.questions[0].answer, "DemoBoilerplate");
-        assert_eq!(sut.is_valid(), true);
     }
 
     #[test]
@@ -110,7 +96,6 @@ mod tests {
         assert_eq!(sut.questions[0].template_key, "licence");
         assert_eq!(sut.questions[0].answer, "MIT");
         assert_eq!(sut.questions[0].get_multiple_choice(), Some(&vec![String::from("MIT"), String::from("GPL")]));
-        assert_eq!(sut.is_valid(), true);
     }
 
     #[test]
@@ -128,6 +113,5 @@ mod tests {
         assert_eq!(sut.questions[0].template_key, "licence");
         assert_eq!(sut.questions[0].answer, "Apache");
         assert_eq!(sut.questions[0].get_multiple_choice(), Some(&vec![String::from("MIT"), String::from("GPL")]));
-        assert_eq!(sut.is_valid(), false);
     }
 }

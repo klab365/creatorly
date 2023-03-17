@@ -1,9 +1,5 @@
-use crate::{
-    application::common::interfaces::Os,
-    domain::{file_list::FileList, template_specification::TemplateSpecification},
-};
-
-use super::interfaces::TemplateRenderer;
+use super::{file_list::FileList, interfaces::TemplateRenderer, template_specification::TemplateSpecification};
+use crate::common::interfaces::Os;
 
 pub struct TemplateEngine<'a> {
     template_renderer: &'a dyn TemplateRenderer,
@@ -18,7 +14,7 @@ impl<'a> TemplateEngine<'a> {
         }
     }
 
-    pub fn render(
+    pub fn render_and_push(
         &self,
         input_root_path: &String,
         destination_path: &str,
@@ -45,8 +41,7 @@ impl<'a> TemplateEngine<'a> {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::application::{common::interfaces::MockOs, create::interfaces::MockTemplateRenderer};
+    use crate::{common::interfaces::MockOs, create::interfaces::MockTemplateRenderer};
 
     use super::*;
 
@@ -74,7 +69,7 @@ mod tests {
         os_mock.expect_write_file().times(2).returning(move |_, _| Ok(()));
 
         let template_engine = TemplateEngine::new(&template_renderer_mock, &os_mock);
-        let result = template_engine.render(&input_root_path, &destination_path, &file_list, template_specification);
+        let result = template_engine.render_and_push(&input_root_path, &destination_path, &file_list, template_specification);
         assert!(result.is_ok());
     }
 }

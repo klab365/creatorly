@@ -1,7 +1,9 @@
 use std::io::{self, Write};
 
-use crate::domain::template_specification::TemplateSpecificationItemType;
-use crate::{application::create::interfaces::Prompt, domain::template_specification::TemplateSpecificationItem};
+use application::create::{
+    interfaces::Prompt,
+    template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType},
+};
 
 pub struct CliPrompt {}
 

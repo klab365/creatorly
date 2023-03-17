@@ -1,12 +1,8 @@
-use std::path::PathBuf;
-
 use super::{
-    interfaces::{FileTreeLoader, Prompt},
+    file_list::FileList,
+    interfaces::{ConfigurationLoader, FileTreeLoader, Prompt},
     template_engine::TemplateEngine,
-};
-use crate::{
-    application::common::interfaces::{ConfigurationLoader, Os},
-    domain::{file_list::FileList, template_specification::TemplateSpecification},
+    template_specification::TemplateSpecification,
 };
 
 pub struct CreateProjectInput {
@@ -14,31 +10,29 @@ pub struct CreateProjectInput {
     pub destination_path: String,
 }
 
-pub struct Service<'a> {
+pub struct CreateService<'a> {
     folder_loader: &'a dyn FileTreeLoader,
     configuration_loader: &'a dyn ConfigurationLoader,
-    file_system: &'a dyn Os,
     prompt: &'a dyn Prompt,
     template_engine: &'a TemplateEngine<'a>,
 }
 
-impl<'a> Service<'a> {
+impl<'a> CreateService<'a> {
     pub fn new(
         folder_loader: &'a dyn FileTreeLoader,
         configuration_loader: &'a dyn ConfigurationLoader,
-        file_system: &'a dyn Os,
         prompt: &'a dyn Prompt,
         template_engine: &'a TemplateEngine,
     ) -> Self {
         Self {
             folder_loader,
             configuration_loader,
-            file_system,
             prompt,
             template_engine,
         }
     }
 
+    /// Create a project from a given template
     pub fn create_project(&self, input: CreateProjectInput) -> Result<(), String> {
         if input.input_path.is_empty() {
             return Err("path is empty".to_string());
@@ -54,17 +48,14 @@ impl<'a> Service<'a> {
         // load template specification
         let mut template_configuration = self.get_template_configuration(&mut files)?;
 
-        // get answer for question
-        self.answer_questions(&mut template_configuration);
+        // parse answer for question
+        self.parse_answer_for_questions(&mut template_configuration);
 
-        // move files to destination folder
-        // self.move_files_to_destination_folder(&input.destination_path, files.unwrap());
-
-        // render files on destination folder
+        // render files and push it to the destination folder
         self.template_engine
-            .render(&input.input_path, &input.destination_path, &files, template_configuration)?;
+            .render_and_push(&input.input_path, &input.destination_path, &files, template_configuration)?;
 
-        // clean up creation
+        // clean up
         self.clean_up();
 
         println!("project created!");
@@ -110,25 +101,7 @@ impl<'a> Service<'a> {
         Ok(files.unwrap())
     }
 
-    fn move_files_to_destination_folder(&self, destination_path: &String, files: FileList) {
-        println!("moving files to destination folder: {destination_path:?}");
-
-        let result = self.file_system.clear_folder(destination_path.clone());
-        if let Err(_error) = result {
-            return;
-        }
-
-        for file in files.files.iter() {
-            let target_path = PathBuf::from(destination_path.clone()).join(file).to_str().unwrap().to_string();
-            let result = self.file_system.move_file(file.clone(), target_path);
-
-            if let Err(_error) = result {
-                return;
-            }
-        }
-    }
-
-    fn answer_questions(&self, template_specification: &mut TemplateSpecification) {
+    fn parse_answer_for_questions(&self, template_specification: &mut TemplateSpecification) {
         for item in &mut template_specification.questions {
             self.prompt.get_answer(item)
         }
@@ -144,26 +117,42 @@ impl<'a> Service<'a> {
 
 #[cfg(test)]
 mod tests {
+    // use crate::core::create::interfaces::MockFileTreeLoader;
+
     // use super::*;
-    // use crate::{application::create::interfaces::MockFileTreeLoader, domain::file_tree::FileList};
+    // // use crate::{application::create::interfaces::MockFileTreeLoader, domain::file_tree::FileList};
 
     // #[test]
-    // fn should_create_project() {
+    // fn create_project_should_return_error_if_path_is_empty() {
     //     // arrange
-    //     let mut filetree_loader_mock = MockFileTreeLoader::new();
-    //     filetree_loader_mock
-    //         .expect_load()
-    //         .with(mockall::predicate::eq("path".to_string()))
-    //         .times(1)
-    //         .returning(|_| Ok(FileList { files: vec![] }));
-
+    //     let filetree_loader_mock = MockFileTreeLoader::new();
     //     let service = Service::new(&filetree_loader_mock);
-    //     let input = CreateProjectInput { input_path: "path".to_string() };
+    //     let input = CreateProjectInput {
+    //         input_path: "".to_string(),
+    //         destination_path: "".to_string(),
+    //     };
 
     //     // act
     //     let result = service.create_project(input);
 
     //     // assert
-    //     assert_eq!(result, Ok(()));
+    //     assert_eq!(result, Err("path is empty".to_string()));
+    // }
+
+    // #[test]
+    // fn create_project_should_return_error_if_destination_path_is_empty() {
+    //     // arrange
+    //     let filetree_loader_mock = MockFileTreeLoader::new();
+    //     let service = Service::new(&filetree_loader_mock);
+    //     let input = CreateProjectInput {
+    //         input_path: "path".to_string(),
+    //         destination_path: "".to_string(),
+    //     };
+
+    //     // act
+    //     let result = service.create_project(input);
+
+    //     // assert
+    //     assert_eq!(result, Err("destination path is empty".to_string()));
     // }
 }

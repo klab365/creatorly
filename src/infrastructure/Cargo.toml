@@ -1,0 +1,15 @@
+[package]
+name = "infrastructure"
+version.workspace = true
+authors.workspace = true
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+application = { path = "../application" }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9.17"
+indexmap = { version = "1.9.2", features = ["serde-1"] }
+walkdir = "2.3.2"
+liquid = "0.26.1"
