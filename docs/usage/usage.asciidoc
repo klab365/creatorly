@@ -1,0 +1,53 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== Usage
+
+=== Create a new project
+
+For this tool, the file `creatorly.yml` must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs in `creatorly.yml` can be used as a placeholder variable in all files and file paths. Since https://shopify.github.io/liquid/ [Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website. 
+
+Below is an example of a `creatorly.yml` file:
+
+[source,yml]
+----
+# creatorly.yml
+
+project_name: "My Template Project"
+----
+
+Below is an example of a `README.md` file that uses the `project_name` variable from the `creatorly.yml` file:
+
+[source,md]
+----
+# Documentation {{ project_name }}
+----
+
+This then becomes:
+
+[source,md]
+----
+# Documentation My Template Project
+----
+
+TIP: Not only the content of the files can be rendered, but also the file name itself. For this purpose, a `{{ }}` block must be used in the file name as well as in the content of the file.
+
+A sample project can be found in the folder `assets/example_project`.
+
+==== Use the CLI
+
+To create a new project, the following command can be executed:
+
+[source,bash]
+----
+    creatorly create <template_project_path> <new_project_path>
+----
+
+TIP: It's recommend using absolute paths!
+
+WARNING: The cli support only local templates for now!

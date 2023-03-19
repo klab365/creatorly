@@ -1,0 +1,11 @@
+[package]
+name = "application"
+version.workspace = true
+authors.workspace = true
+edition = "2021"
+
+[dev-dependencies]
+mockall = "0.11"
+
+[dependencies]
+log = { workspace = true }
