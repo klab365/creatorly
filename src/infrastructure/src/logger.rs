@@ -1,4 +1,4 @@
-use simplelog::{format_description, ColorChoice, Config, ConfigBuilder, TermLogger, TerminalMode};
+use simplelog::{format_description, ColorChoice, ConfigBuilder, TermLogger, TerminalMode};
 
 pub fn setup_logger() {
     let config = ConfigBuilder::new().set_time_format_custom(format_description!("")).build();

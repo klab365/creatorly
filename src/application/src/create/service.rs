@@ -1,6 +1,6 @@
 use super::{
     file_list::FileList,
-    interfaces::{ConfigurationLoader, FileTreeLoader, Prompt},
+    interfaces::{ConfigurationLoader, FileListLoader, Prompt},
     template_engine::TemplateEngine,
     template_specification::TemplateSpecification,
 };
@@ -13,7 +13,7 @@ pub struct CreateProjectInput {
 }
 
 pub struct CreateService<'a> {
-    folder_loader: &'a dyn FileTreeLoader,
+    folder_loader: &'a dyn FileListLoader,
     configuration_loader: &'a dyn ConfigurationLoader,
     prompt: &'a dyn Prompt,
     template_engine: &'a TemplateEngine<'a>,
@@ -21,7 +21,7 @@ pub struct CreateService<'a> {
 
 impl<'a> CreateService<'a> {
     pub fn new(
-        folder_loader: &'a dyn FileTreeLoader,
+        folder_loader: &'a dyn FileListLoader,
         configuration_loader: &'a dyn ConfigurationLoader,
         prompt: &'a dyn Prompt,
         template_engine: &'a TemplateEngine,
@@ -82,16 +82,10 @@ impl<'a> CreateService<'a> {
     }
 
     fn load_files(&self, input_path: &str) -> Result<FileList, String> {
-        let files: Result<FileList, String> = self.folder_loader.load(input_path);
-        if let Err(error) = files {
-            return Err(error);
-        }
+        let files = self.folder_loader.load(input_path)?;
+        info!("found {} files on template project", files.files.len());
 
-        if let Ok(files) = files.clone() {
-            info!("found {} files on template project", files.files.len());
-        }
-
-        Ok(files.unwrap())
+        Ok(files)
     }
 
     fn parse_answer_for_questions(&self, template_specification: &mut TemplateSpecification) {

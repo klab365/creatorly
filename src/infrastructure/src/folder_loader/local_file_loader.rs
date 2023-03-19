@@ -1,4 +1,4 @@
-use application::create::{file_list::FileList, interfaces::FileTreeLoader};
+use application::create::{file_list::FileList, interfaces::FileListLoader};
 use std::path::PathBuf;
 use walkdir::WalkDir;
 
@@ -16,7 +16,7 @@ impl Default for LocalFileLoader {
     }
 }
 
-impl FileTreeLoader for LocalFileLoader {
+impl FileListLoader for LocalFileLoader {
     fn load(&self, root_path: &str) -> Result<FileList, String> {
         let path = PathBuf::from(root_path);
 
