@@ -8,11 +8,9 @@ Creatorly is a project to generate repository from template. Addionally, it set 
 
 * Create a project folder from a template with specified template variables. These variables can be parsed from the command line.
 
-## Installation
-
-tbd
-
 ## Documentation
+
+Here are some documentations about the project:
 
 * [Usage](docs/usage/usage.md)
 * [Architecture](docs/architecture/architecture.md)

@@ -16,7 +16,8 @@
 				"GitHub.copilot",
 				"mhutchie.git-graph",
 				"Swellaby.vscode-rust-test-adapter",
-				"eamodio.gitlens"
+				"eamodio.gitlens",
+				"asciidoctor.asciidoctor-vscode"
 			]
 		}
 	}
