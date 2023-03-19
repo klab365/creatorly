@@ -33,7 +33,6 @@ jobs:
 
   test:
     name: Test
-    needs: format
     runs-on: ubuntu-latest
 
     steps:
@@ -54,7 +53,6 @@ jobs:
 
   clippy:
     name: Clippy
-    needs: [format, test]
     runs-on: ubuntu-latest
 
     steps:
@@ -76,7 +74,6 @@ jobs:
 
   bench:
     name: Benchmark
-    needs: [format, test, clippy]
     runs-on: ubuntu-latest
 
     steps:
