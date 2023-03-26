@@ -2,21 +2,21 @@ use application::create::{file_list::FileList, interfaces::FileListLoader};
 use std::path::PathBuf;
 use walkdir::WalkDir;
 
-pub struct LocalFileLoader {}
+pub struct LocalFileListLoader {}
 
-impl LocalFileLoader {
+impl LocalFileListLoader {
     fn new() -> Self {
         Self {}
     }
 }
 
-impl Default for LocalFileLoader {
+impl Default for LocalFileListLoader {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl FileListLoader for LocalFileLoader {
+impl FileListLoader for LocalFileListLoader {
     fn load(&self, root_path: &str) -> Result<FileList, String> {
         let path = PathBuf::from(root_path);
 
@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn test_load_should_return_correct_files() {
-        let loader = LocalFileLoader::new();
+        let loader = LocalFileListLoader::new();
         let mut example_project_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         example_project_path.push("resources/test");
         example_project_path.push("test_project");
@@ -65,7 +65,7 @@ mod tests {
     fn test_load_should_return_error_when_path_does_not_exist() {
         let mut path = String::from(env!("CARGO_MANIFEST_DIR"));
         path.push_str("/resources/test/test_project_not_exists");
-        let loader = LocalFileLoader::new();
+        let loader = LocalFileListLoader::new();
         let result = loader.load("src/infrastructure/folder_loader/test_data/example_project_not_exists");
 
         assert!(result.is_err());
@@ -79,7 +79,7 @@ mod tests {
     fn test_load_should_return_error_when_path_is_not_a_directory() {
         let mut path = String::from(env!("CARGO_MANIFEST_DIR"));
         path.push_str("/resources/test/test_project/test.txt");
-        let loader = LocalFileLoader::new();
+        let loader = LocalFileListLoader::new();
         let result = loader.load(&path);
 
         assert!(result.is_err());

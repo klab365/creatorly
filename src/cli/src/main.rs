@@ -25,7 +25,6 @@ fn main() {
     setup_logger();
 
     let cli = Cli::parse();
-
     match cli.command {
         Some(Commands::Create(create)) => create::parse_command(create),
         None => {
