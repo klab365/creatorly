@@ -16,8 +16,6 @@ Below is an example of a `creatorly.yml` file:
 
 [source,yml]
 ----
-# creatorly.yml
-
 project_name: "My Template Project"
 ----
 
@@ -28,7 +26,7 @@ Below is an example of a `README.md` file that uses the `project_name` variable 
 # Documentation {{ project_name }}
 ----
 
-This then becomes:
+This then becomes after this tool is executed:
 
 [source,md]
 ----
@@ -41,13 +39,18 @@ A sample project can be found in the folder `assets/example_project`.
 
 ==== Use the CLI
 
-To create a new project, the following command can be executed:
+To create a new project, the following command can be executed, if a local template project is used:
 
 [source,bash]
 ----
-    creatorly create <template_project_path> <new_project_path>
+    creatorly create local --template-path <template_path> --destination-path <destination_path>
+----
+
+If a remote template project is used, the following command can be executed:
+
+[source,bash]
+----
+    creatorly create git --remote-path <remote_path> --branch <branc>  --destination-path <destination_path>
 ----
 
 TIP: It's recommend using absolute paths!
-
-WARNING: The cli support only local templates for now!
