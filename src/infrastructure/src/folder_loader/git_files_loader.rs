@@ -17,7 +17,7 @@ impl<'a> GitFileListLoader<'a> {
     }
 
     fn get_git_name(&self, git_url: &str) -> String {
-        let git_url_split = git_url.split("/").collect::<Vec<&str>>();
+        let git_url_split = git_url.split('/').collect::<Vec<&str>>();
         let git_name = git_url_split[git_url_split.len() - 1];
         git_name.replace(".git", "")
     }
@@ -54,7 +54,7 @@ impl<'a> GitFileListLoader<'a> {
     }
 
     fn remove_hidden_git_folder(&self, files: FileList) -> FileList {
-        let mut filtered_files = files.clone();
+        let mut filtered_files = files;
 
         filtered_files.files.retain(|file| !file.contains(".git/"));
 
@@ -102,7 +102,7 @@ mod tests {
         let file_list_loader_mock = LocalFileListLoader::default();
         let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
 
-        let git_name = sut.get_git_name("git@github.com:BuriKizilkaya/creatorly.git");
+        let git_name = sut.get_git_name("https://github.com/BuriKizilkaya/creatorly.git");
 
         assert_eq!(git_name, "creatorly");
     }
@@ -112,7 +112,7 @@ mod tests {
         let file_list_loader_mock = LocalFileListLoader::default();
         let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
 
-        let files: Result<FileList, String> = sut.load("git@github.com:BuriKizilkaya/creatorly.git");
+        let files: Result<FileList, String> = sut.load("https://github.com/BuriKizilkaya/creatorly.git");
 
         assert!(files.is_ok());
         assert!(files.clone().unwrap().files.len() > 0);
