@@ -15,4 +15,8 @@ walkdir = "2.3.2"
 liquid = "0.26.1"
 simplelog = "0.12"
 time = "0.3"
+regex = "1.7.1"
 log = { workspace = true }
+
+[dev-dependencies]
+mockall = "0.11"
