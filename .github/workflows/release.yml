@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'V*.*.*'
+
+jobs:
+  build-and-release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        target: [x86_64-unknown-linux-musl, x86_64-apple-darwin, x86_64-pc-windows-msvc]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+
+      - name: Extract version number
+        id: extract_version
+        run: echo ::set-output name=version::$(echo ${{ github.ref }} | sed 's/V\(.*\)/\1/')
+
+      - name: Build CLI tool
+        run: cargo build --release --target ${{ matrix.target }}
+        env:
+          VERSION: ${{ steps.extract_version.outputs.version }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/${{ matrix.target }}/release/my-cli-tool
+            install.sh
+          tag_name: ${{ github.ref }}
+          name: 🎉 creatorly V${{ env.VERSION }}
+          draft: false
+          prerelease: false
