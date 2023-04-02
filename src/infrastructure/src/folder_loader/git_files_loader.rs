@@ -108,6 +108,17 @@ mod tests {
     }
 
     #[test]
+    fn test_get_git_name_from_azuredevops_return_correct_name() {
+        let file_list_loader_mock = LocalFileListLoader::default();
+        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+
+        let files = sut.load("https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo");
+
+        assert!(files.is_ok());
+        assert!(files.clone().unwrap().files.len() > 0);
+    }
+
+    #[test]
     fn test_load_should_return_correct_files() {
         let file_list_loader_mock = LocalFileListLoader::default();
         let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());

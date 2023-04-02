@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'V*.*.*'
+
+jobs:
+  build-and-release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        target: [x86_64-unknown-linux-musl]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: ${{ matrix.target }}
+
+      - name: Extract version number
+        id: extract_version
+        run: echo "creatorly_version=$(echo ${{ github.ref }} | sed 's/V\(.*\)/\1/')" >> $GITHUB_ENV
+
+      - name: Build CLI tool
+        run: cargo build --release --target ${{ matrix.target }}
+        env:
+          VERSION: ${{ env.creatorly_version }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/${{ matrix.target }}/release/creatorly
+          tag_name: ${{ github.ref }}
+          name: 🎉 creatorly V${{ env.creatorly_version }}
+          draft: false
+          prerelease: false
