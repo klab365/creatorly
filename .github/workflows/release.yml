@@ -10,30 +10,33 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        target: [x86_64-unknown-linux-musl, x86_64-apple-darwin, x86_64-pc-windows-msvc]
+        os: [ubuntu-latest]
+        target: [x86_64-unknown-linux-musl]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Rust
-        uses: actions/setup-rust@v1
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: ${{ matrix.target }}
 
       - name: Extract version number
         id: extract_version
-        run: echo ::set-output name=version::$(echo ${{ github.ref }} | sed 's/V\(.*\)/\1/')
+        run: echo "creatorly_version=$(echo ${{ github.ref }} | sed 's/V\(.*\)/\1/')" >> $GITHUB_ENV
 
       - name: Build CLI tool
         run: cargo build --release --target ${{ matrix.target }}
         env:
-          VERSION: ${{ steps.extract_version.outputs.version }}
+          VERSION: ${{ env.creatorly_version }}
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/${{ matrix.target }}/release/my-cli-tool
-            install.sh
+            target/${{ matrix.target }}/release/creatorly
           tag_name: ${{ github.ref }}
-          name: 🎉 creatorly V${{ env.VERSION }}
+          name: 🎉 creatorly V${{ env.creatorly_version }}
           draft: false
           prerelease: false

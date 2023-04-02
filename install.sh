@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -euo pipefail
+# exit when any command fails
+set -e
 
 echo "Installing creatorly..."
 
