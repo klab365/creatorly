@@ -57,8 +57,8 @@ mod tests {
         let file_entry2 = example_project_path.join("test.txt");
 
         assert_eq!(file_list.files.len(), 2);
-        assert_eq!(file_list.files[0], file_entry1.to_str().unwrap().to_string());
-        assert_eq!(file_list.files[1], file_entry2.to_str().unwrap().to_string());
+        assert_eq!(file_list.files.contains(&file_entry1.to_str().unwrap().to_string()), true);
+        assert_eq!(file_list.files.contains(&file_entry2.to_str().unwrap().to_string()), true);
     }
 
     #[test]

@@ -10,7 +10,7 @@ endif::[]
 
 === Create a new project
 
-For this tool, the file `creatorly.yml` must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs in `creatorly.yml` can be used as a placeholder variable in all files and file paths. Since https://shopify.github.io/liquid/ [Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website. 
+For this tool, the file `creatorly.yml` must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs in `creatorly.yml` can be used as a placeholder variable in all files and file paths. Since link:https://shopify.github.io/liquid/[Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website. 
 
 Below is an example of a `creatorly.yml` file:
 
@@ -46,11 +46,11 @@ To create a new project, the following command can be executed, if a local templ
     creatorly create local --template-path <template_path> --destination-path <destination_path>
 ----
 
-If a remote template project is used, the following command can be executed:
+If a remote template project is used, the following command can be used:
 
 [source,bash]
 ----
-    creatorly create git --remote-path <remote_path> --branch <branc>  --destination-path <destination_path>
+    creatorly create git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
 ----
 
 TIP: It's recommend using absolute paths!

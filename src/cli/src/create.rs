@@ -5,15 +5,14 @@ use application::create::{
 use clap::{command, Args, Subcommand};
 use infrastructure::{
     configuration_loader::yaml_configuration_loader::YamlConfigurationLoader, file_system::FileSystem, folder_loader::git_files_loader::GitFileListLoader,
-    folder_loader::local_file_loader::LocalFileListLoader, prompt::cli_prompt::CliPrompt, template_renderer::liquid_template::LiquidTemplateRenderer,
+    folder_loader::local_file_loader::LocalFileListLoader, prompt::cli_prompt::CliPrompt, template_renderer::liquid_template_renderer::LiquidTemplateRenderer,
 };
-use log::error;
 
 #[derive(Args)]
 pub struct Create {
     /// command
     #[command(subcommand)]
-    sub_commands: Option<CreateSubCommands>,
+    sub_commands: CreateSubCommands,
 }
 
 #[derive(Subcommand)]
@@ -61,7 +60,7 @@ pub fn parse_command(create: Create) {
     let template_engine: TemplateEngine = TemplateEngine::new(&liquid_template_renderer, &file_system);
 
     match create.sub_commands {
-        Some(CreateSubCommands::Local(_local_create)) => {
+        CreateSubCommands::Local(_local_create) => {
             let input: CreateProjectInput = CreateProjectInput {
                 input_path: _local_create.template_path.trim_end_matches('/').to_string(),
                 destination_path: _local_create.destination_path.trim_end_matches('/').to_string(),
@@ -69,7 +68,7 @@ pub fn parse_command(create: Create) {
             let service: CreateService = CreateService::new(&local_file_list_loader, &configuration_loader, &prompt, &template_engine);
             service.create_project(input).unwrap();
         }
-        Some(CreateSubCommands::Git(_git_create)) => {
+        CreateSubCommands::Git(_git_create) => {
             let git_file_list_loader: GitFileListLoader = GitFileListLoader::new(&local_file_list_loader, "/tmp/".to_string(), _git_create.branch);
             let input: CreateProjectInput = CreateProjectInput {
                 input_path: _git_create.remote_path,
@@ -77,9 +76,6 @@ pub fn parse_command(create: Create) {
             };
             let service: CreateService = CreateService::new(&git_file_list_loader, &configuration_loader, &prompt, &template_engine);
             service.create_project(input).unwrap();
-        }
-        None => {
-            error!("no subcommand for create found");
         }
     }
 }

@@ -1,18 +1,19 @@
 #![allow(dead_code)]
+#![warn(unused_extern_crates)]
 
 use clap::{command, Parser, Subcommand};
 use create::Create;
 use infrastructure::logger::setup_logger;
-use log::error;
 
 mod create;
 
 #[derive(Parser)]
 #[command(author, version)]
 #[command(about = "creatorly - a simple cli to generate projects from templates")]
+#[command(arg_required_else_help = true)]
 struct Cli {
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
 #[derive(Subcommand)]
@@ -26,9 +27,6 @@ fn main() {
 
     let cli = Cli::parse();
     match cli.command {
-        Some(Commands::Create(create)) => create::parse_command(create),
-        None => {
-            error!("command not found");
-        }
+        Commands::Create(create) => create::parse_command(create),
     }
 }
