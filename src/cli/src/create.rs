@@ -5,7 +5,7 @@ use application::create::{
 use clap::{command, Args, Subcommand};
 use infrastructure::{
     configuration_loader::yaml_configuration_loader::YamlConfigurationLoader, file_system::FileSystem, folder_loader::git_files_loader::GitFileListLoader,
-    folder_loader::local_file_loader::LocalFileListLoader, prompt::cli_prompt::CliPrompt, template_renderer::liquid_template::LiquidTemplateRenderer,
+    folder_loader::local_file_loader::LocalFileListLoader, prompt::cli_prompt::CliPrompt, template_renderer::liquid_template_renderer::LiquidTemplateRenderer,
 };
 use log::error;
 

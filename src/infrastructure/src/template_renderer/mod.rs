@@ -1,1 +1,1 @@
-pub mod liquid_template;
+pub mod liquid_template_renderer;
