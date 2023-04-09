@@ -28,8 +28,6 @@ jobs:
 
       - name: Build CLI tool
         run: cargo build --release --target ${{ matrix.target }}
-        env:
-          VERSION: ${{ env.creatorly_version }}
 
       - name: Create release
         uses: softprops/action-gh-release@v1
