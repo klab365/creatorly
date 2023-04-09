@@ -20,3 +20,14 @@ Here are some documentations about the project:
 
 * [Usage](docs/usage/usage.md)
 * [Architecture](docs/architecture/architecture.md)
+
+## Contributing
+
+### Release
+
+To release a new version, follow these steps:
+
+1. Update the version in `Cargo.toml`
+2. Run `release-plz update` to generate a new changelog
+3. Commit the changes and create a new PR
+4. Once the PR is merged, create a git tag with the version number and push it to the repository
