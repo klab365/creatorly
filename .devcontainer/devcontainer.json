@@ -17,7 +17,8 @@
 				"mhutchie.git-graph",
 				"Swellaby.vscode-rust-test-adapter",
 				"eamodio.gitlens",
-				"asciidoctor.asciidoctor-vscode"
+				"asciidoctor.asciidoctor-vscode",
+				"EditorConfig.EditorConfig"
 			]
 		}
 	}

@@ -1,6 +1,6 @@
 name: ci
 
-on: 
+on:
   push:
     branches: [main]
   pull_request:
@@ -90,4 +90,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: bench
-          args: --verbose    
+          args: --verbose
