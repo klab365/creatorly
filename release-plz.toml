@@ -1,0 +1,9 @@
+[workspace]
+# disable the changelog for all packages
+update_changelog = false
+
+[package.creatorly]
+# enable the changelog for this package
+update_changelog = true
+# set the path of the changelog to the root of the repository
+changelog_path = "./CHANGELOG.md"

@@ -24,7 +24,7 @@ jobs:
 
       - name: Extract version number
         id: extract_version
-        run: echo "creatorly_version=$(echo ${{ github.ref }} | sed 's/V\(.*\)/\1/')" >> $GITHUB_ENV
+        run: echo "creatorly_version=$(echo ${{ github.ref }} | sed 's/refs\/tags\/V\(.*\)/\1/')" >> $GITHUB_ENV
 
       - name: Build CLI tool
         run: cargo build --release --target ${{ matrix.target }}
