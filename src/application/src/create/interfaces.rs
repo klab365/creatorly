@@ -21,12 +21,13 @@ pub trait FileListLoader {
 /// The input can be the content of a file or a path to a file
 #[cfg_attr(test, automock)]
 pub trait TemplateRenderer {
+    /// render the input with the given template specification
     fn render(&self, input: String, config: TemplateSpecification) -> Result<String, String>;
 }
 
 /// This interface is used to get the answer of the question
 #[cfg_attr(test, automock)]
 pub trait Prompt {
-    // get the answer of the questions
+    /// get the answer of the questions
     fn get_answer(&self, template_specification_item: &mut TemplateSpecificationItem);
 }

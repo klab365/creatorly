@@ -1,5 +1,6 @@
 use application::create::{interfaces::TemplateRenderer, template_specification::TemplateSpecification};
 use liquid::model::Value;
+use log::warn;
 
 pub struct LiquidTemplateRenderer {}
 
@@ -21,10 +22,10 @@ impl TemplateRenderer for LiquidTemplateRenderer {
         }
 
         let data: liquid::Object = map_to_liquid_object(config);
-
         let output = template.unwrap().render(&data);
         if let Err(error) = output {
-            return Err(error.to_string());
+            warn!("Error while rendering template: {}", error);
+            return Ok(input);
         }
 
         Ok(output.unwrap())
@@ -48,6 +49,14 @@ mod tests {
         });
         let output = liquid_template_renderer.render("Hello {{name}}!".to_string(), data).unwrap();
         assert_eq!(output, "Hello Max!");
+    }
+
+    #[test]
+    fn render_should_not_return_rendered_value() {
+        let liquid_template_renderer = LiquidTemplateRenderer {};
+        let data = TemplateSpecification { questions: Vec::new() };
+        let output = liquid_template_renderer.render("Hello {{ name }}!".to_string(), data).unwrap();
+        assert_ne!(output, "Hello {{ name }}!");
     }
 
     #[test]
