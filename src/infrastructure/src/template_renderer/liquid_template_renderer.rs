@@ -21,7 +21,6 @@ impl TemplateRenderer for LiquidTemplateRenderer {
         }
 
         let data: liquid::Object = map_to_liquid_object(config);
-
         let output = template.unwrap().render(&data);
         if let Err(error) = output {
             return Err(error.to_string());
@@ -48,6 +47,22 @@ mod tests {
         });
         let output = liquid_template_renderer.render("Hello {{name}}!".to_string(), data).unwrap();
         assert_eq!(output, "Hello Max!");
+    }
+
+    #[test]
+    fn render_should_not_return_rendered_value() {
+        let liquid_template_renderer = LiquidTemplateRenderer {};
+        let data = TemplateSpecification { questions: Vec::new() };
+        let output = liquid_template_renderer.render("Hello {{ name }}!".to_string(), data);
+        assert!(output.is_err());
+    }
+
+    #[test]
+    fn render_empty_brackets_should_return_orginal_string() {
+        let liquid_template_renderer = LiquidTemplateRenderer {};
+        let data = TemplateSpecification { questions: Vec::new() };
+        let output = liquid_template_renderer.render("Hello {{ }}!".to_string(), data);
+        assert!(output.is_err());
     }
 
     #[test]

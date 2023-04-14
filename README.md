@@ -6,7 +6,7 @@ Note: This project is inspired by [cookiecutter](https://github.com/cookiecutter
 
 Creatorly is a project to generate repository from template. Addionally, it set up the remote repository with the desired policies. Main features are:
 
-* Create a project folder from a template with specified template variables. These variables can be parsed from the command line.
+* Create a project folder from a template with specified template questions. These questions can be answered from the command line.
 
 ## Installation
 
