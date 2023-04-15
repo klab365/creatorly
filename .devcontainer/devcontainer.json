@@ -3,7 +3,9 @@
 {
 	"name": "creatorly-devcontainer",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/rust:0-1-bullseye",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {}
 	},
