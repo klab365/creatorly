@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0](https://github.com/BuriKizilkaya/Creatorly/releases/tag/creatorly-v1.0.0) - 2023-04-09
+## 1.0.1 - 2023-04-16
+
+### Fixed
+
+* If a input string can not be rendered than it will log a warn message. Issue #15
+
+## 1.0.0 - 2023-04-09
 
 ### Other
 - Update create cli error and install.sh
