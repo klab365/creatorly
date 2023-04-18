@@ -6,3 +6,6 @@ This project is generated from a template!
 
 ## No Variable {{ test }}
 
+## Wrong token
+
+- ${{ if startsWith(variables['build.sourceBranch'], 'refs/tags/') }}
