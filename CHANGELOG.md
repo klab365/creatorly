@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.0.2 - 2023-04-18
+
+* If a content of a file has invalid tokens, then log a warn message and return the content how it is. Issue #19
+
 ## 1.0.1 - 2023-04-16
 
 ### Fixed

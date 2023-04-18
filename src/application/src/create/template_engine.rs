@@ -28,7 +28,7 @@ impl<'a> TemplateEngine<'a> {
             let rendered_file_name = match renderd_file_name_result {
                 Ok(renderd_file_name) => renderd_file_name,
                 Err(error) => {
-                    warn!("Error while rendering path {}: {}", file, error);
+                    warn!("Warn while rendering path {}: {}", file, error);
                     file.clone()
                 }
             };
@@ -36,12 +36,12 @@ impl<'a> TemplateEngine<'a> {
 
             // render file content
             let content = self.file_system.read_file(file.clone()).expect("issue to read file");
-            let renderd_file_content = self.template_renderer.render(content, _template_specification.clone());
+            let renderd_file_content = self.template_renderer.render(content.clone(), _template_specification.clone());
             let renderd_file_content = match renderd_file_content {
                 Ok(renderd_file_content) => renderd_file_content,
                 Err(error) => {
-                    warn!("Error while rendering content of path {}: {}", file, error);
-                    continue;
+                    warn!("Warn while rendering content of path {}: {}", file, error);
+                    content.clone()
                 }
             };
 
@@ -97,7 +97,7 @@ mod tests {
         let input_root_path = "/input/root/path".to_owned();
         let destination_path = "/destination/path";
         let template_specification = TemplateSpecification::default();
-        let mut file_contents = vec!["file1 content", "file2 content"];
+        let mut file_contents = vec!["file1 content", "${{ if startsWith(variables['build.sourceBranch'], 'refs/tags/') }}"];
 
         let mut template_renderer_mock = MockTemplateRenderer::new();
         template_renderer_mock.expect_render().times(4).returning(|_, _| Err(String::from("error")));
@@ -107,7 +107,7 @@ mod tests {
             .expect_read_file()
             .times(2)
             .returning(move |_| Ok(file_contents.pop().unwrap().to_string()));
-        os_mock.expect_write_file().times(0);
+        os_mock.expect_write_file().times(2).returning(move |_, _| Ok(()));
 
         // act
         let template_engine = TemplateEngine::new(&template_renderer_mock, &os_mock);
