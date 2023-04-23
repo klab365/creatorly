@@ -4,7 +4,7 @@ This project is generated from a template!
 
 ## Empty {{ }}
 
-## No Variable {{ test }}
+## Variable doesn't exists {{ test }}
 
 ## Wrong token
 
