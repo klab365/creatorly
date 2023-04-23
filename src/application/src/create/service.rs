@@ -1,3 +1,5 @@
+use crate::create::template_engine::RenderPushArgument;
+
 use super::{
     file_list::FileList,
     interfaces::{ConfigurationLoader, FileListLoader, Prompt},
@@ -54,8 +56,13 @@ impl<'a> CreateService<'a> {
         self.parse_answer_for_questions(&mut template_configuration);
 
         // render files and push it to the destination folder
-        self.template_engine
-            .render_and_push(&input.input_path, &input.destination_path, &files, template_configuration)?;
+        let args = RenderPushArgument {
+            input_root_path: input.input_path.clone(),
+            destination_path: input.destination_path,
+            file_list: files,
+            template_specification: template_configuration,
+        };
+        self.template_engine.render_and_push(args)?;
 
         info!("project created!");
         Ok(())
