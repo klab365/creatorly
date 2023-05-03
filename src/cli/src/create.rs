@@ -7,6 +7,7 @@ use infrastructure::{
     configuration_loader::yaml_configuration_loader::YamlConfigurationLoader, file_system::FileSystem, folder_loader::git_files_loader::GitFileListLoader,
     folder_loader::local_file_loader::LocalFileListLoader, prompt::cli_prompt::CliPrompt, template_renderer::liquid_template_renderer::LiquidTemplateRenderer,
 };
+use std::sync::{Arc, Mutex};
 
 #[derive(Args)]
 pub struct Create {
@@ -52,12 +53,12 @@ struct GitCreate {
 
 // parse create commands
 pub fn parse_command(create: Create) {
-    let configuration_loader: YamlConfigurationLoader = YamlConfigurationLoader {};
-    let file_system: FileSystem = FileSystem {};
-    let prompt: CliPrompt = CliPrompt {};
-    let liquid_template_renderer: LiquidTemplateRenderer = LiquidTemplateRenderer {};
-    let local_file_list_loader: LocalFileListLoader = LocalFileListLoader::default();
-    let template_engine: TemplateEngine = TemplateEngine::new(&liquid_template_renderer, &file_system);
+    let configuration_loader = Arc::new(YamlConfigurationLoader {});
+    let file_system = Arc::new(FileSystem {});
+    let prompt = Arc::new(CliPrompt {});
+    let liquid_template_renderer = Arc::new(Mutex::new(LiquidTemplateRenderer {}));
+    let local_file_list_loader = Arc::new(LocalFileListLoader::default());
+    let template_engine = Arc::new(TemplateEngine::new(liquid_template_renderer, file_system));
 
     match create.sub_commands {
         CreateSubCommands::Local(_local_create) => {
@@ -65,16 +66,16 @@ pub fn parse_command(create: Create) {
                 input_path: _local_create.template_path.trim_end_matches('/').to_string(),
                 destination_path: _local_create.destination_path.trim_end_matches('/').to_string(),
             };
-            let service: CreateService = CreateService::new(&local_file_list_loader, &configuration_loader, &prompt, &template_engine);
+            let service: CreateService = CreateService::new(local_file_list_loader, configuration_loader, prompt, template_engine);
             service.create_project(input).unwrap();
         }
         CreateSubCommands::Git(_git_create) => {
-            let git_file_list_loader: GitFileListLoader = GitFileListLoader::new(&local_file_list_loader, "/tmp/".to_string(), _git_create.branch);
+            let git_file_list_loader = Arc::new(GitFileListLoader::new(local_file_list_loader, "/tmp/".to_string(), _git_create.branch));
             let input: CreateProjectInput = CreateProjectInput {
                 input_path: _git_create.remote_path,
                 destination_path: _git_create.destination_path.trim_end_matches('/').to_string(),
             };
-            let service: CreateService = CreateService::new(&git_file_list_loader, &configuration_loader, &prompt, &template_engine);
+            let service: CreateService = CreateService::new(git_file_list_loader, configuration_loader, prompt, template_engine);
             service.create_project(input).unwrap();
         }
     }

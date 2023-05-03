@@ -1,14 +1,14 @@
 use application::create::{file_list::FileList, interfaces::FileListLoader};
-use std::{path::PathBuf, process::Command, str::FromStr};
+use std::{path::PathBuf, process::Command, str::FromStr, sync::Arc};
 
-pub struct GitFileListLoader<'a> {
-    file_list_loader: &'a dyn FileListLoader,
+pub struct GitFileListLoader {
+    file_list_loader: Arc<dyn FileListLoader>,
     local_storage_path: String,
     branch_name: String,
 }
 
-impl<'a> GitFileListLoader<'a> {
-    pub fn new(file_list_loader: &'a dyn FileListLoader, local_storage_path: String, branch_name: String) -> Self {
+impl GitFileListLoader {
+    pub fn new(file_list_loader: Arc<dyn FileListLoader>, local_storage_path: String, branch_name: String) -> Self {
         Self {
             file_list_loader,
             local_storage_path,
@@ -62,7 +62,7 @@ impl<'a> GitFileListLoader<'a> {
     }
 }
 
-impl<'a> FileListLoader for GitFileListLoader<'a> {
+impl FileListLoader for GitFileListLoader {
     fn load(&self, remote_git_url: &str) -> Result<FileList, String> {
         let repo_name = self.get_git_name(remote_git_url);
         let path_which_is_cloned = format!("{}{}", self.local_storage_path, repo_name);

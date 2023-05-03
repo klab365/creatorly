@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+
 use super::{file_list::FileList, interfaces::TemplateRenderer, template_specification::TemplateSpecification};
 use crate::common::interfaces::Os;
 use log::{info, warn};
@@ -10,13 +12,14 @@ pub struct RenderPushArgument {
     pub template_specification: TemplateSpecification,
 }
 
-pub struct TemplateEngine<'a> {
-    template_renderer: &'a dyn TemplateRenderer,
-    file_system: &'a dyn Os,
+pub struct TemplateEngine {
+    template_renderer: Arc<Mutex<dyn TemplateRenderer>>,
+    file_system: Arc<dyn Os>,
 }
 
-impl<'a> TemplateEngine<'a> {
-    pub fn new(template_renderer: &'a dyn TemplateRenderer, file_system: &'a dyn Os) -> Self {
+impl TemplateEngine {
+    /// create a new instance of the template engine
+    pub fn new(template_renderer: Arc<Mutex<dyn TemplateRenderer>>, file_system: Arc<dyn Os>) -> Self {
         Self {
             template_renderer,
             file_system,
@@ -44,7 +47,8 @@ impl<'a> TemplateEngine<'a> {
         input_root_path: &str,
         destination_path: &str,
     ) -> Result<String, String> {
-        let renderd_file_name_result = self.template_renderer.render(file_name.clone(), template_specification.clone());
+        let renderer = self.template_renderer.lock().unwrap();
+        let renderd_file_name_result = renderer.render(file_name.clone(), template_specification.clone());
         let rendered_file_name = match renderd_file_name_result {
             Ok(renderd_file_name) => renderd_file_name,
             Err(error) => {
@@ -63,8 +67,9 @@ impl<'a> TemplateEngine<'a> {
     fn render_file_content_line_by_line(&self, file_name: &String, template_specification: &TemplateSpecification, target_file_path: &str) {
         let content = self.file_system.read_file_buffered(file_name.clone()).expect("issue to read file");
 
+        let renderer = self.template_renderer.lock().unwrap();
         for line in content {
-            let renderd_line = self.template_renderer.render(line.clone(), template_specification.clone());
+            let renderd_line = renderer.render(line.clone(), template_specification.clone());
             let renderd_line = match renderd_line {
                 Ok(renderd_line) => renderd_line,
                 Err(error) => {

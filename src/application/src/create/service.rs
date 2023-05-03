@@ -1,4 +1,4 @@
-use crate::create::template_engine::RenderPushArgument;
+use std::sync::Arc;
 
 use super::{
     file_list::FileList,
@@ -6,7 +6,7 @@ use super::{
     template_engine::TemplateEngine,
     template_specification::TemplateSpecification,
 };
-
+use crate::create::template_engine::RenderPushArgument;
 use log::info;
 
 pub struct CreateProjectInput {
@@ -14,19 +14,19 @@ pub struct CreateProjectInput {
     pub destination_path: String,
 }
 
-pub struct CreateService<'a> {
-    folder_loader: &'a dyn FileListLoader,
-    configuration_loader: &'a dyn ConfigurationLoader,
-    prompt: &'a dyn Prompt,
-    template_engine: &'a TemplateEngine<'a>,
+pub struct CreateService {
+    folder_loader: Arc<dyn FileListLoader>,
+    configuration_loader: Arc<dyn ConfigurationLoader>,
+    prompt: Arc<dyn Prompt>,
+    template_engine: Arc<TemplateEngine>,
 }
 
-impl<'a> CreateService<'a> {
+impl CreateService {
     pub fn new(
-        folder_loader: &'a dyn FileListLoader,
-        configuration_loader: &'a dyn ConfigurationLoader,
-        prompt: &'a dyn Prompt,
-        template_engine: &'a TemplateEngine,
+        folder_loader: Arc<dyn FileListLoader>,
+        configuration_loader: Arc<dyn ConfigurationLoader>,
+        prompt: Arc<dyn Prompt>,
+        template_engine: Arc<TemplateEngine>,
     ) -> Self {
         Self {
             folder_loader,
