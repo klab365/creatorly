@@ -31,7 +31,12 @@ impl TemplateEngine {
         let now = std::time::Instant::now();
 
         for file in args.file_list.files {
-            let target_file_name = self.render_file_name(&file, &args.template_specification, &args.input_root_path, &args.destination_path)?;
+            let target_file_name = self.render_file_name(
+                &file,
+                &args.template_specification,
+                &args.input_root_path,
+                &args.destination_path,
+            )?;
             self.render_file_content_line_by_line(&file, &args.template_specification, &target_file_name);
         }
 
@@ -58,14 +63,23 @@ impl TemplateEngine {
         };
 
         let renderd_file_name = rendered_file_name.replace(input_root_path, destination_path);
-        self.file_system.write_file(renderd_file_name.clone(), String::from(""))?;
+        self.file_system
+            .write_file(renderd_file_name.clone(), String::from(""))?;
 
         Ok(renderd_file_name)
     }
 
     /// render the file content line by line
-    fn render_file_content_line_by_line(&self, file_name: &String, template_specification: &TemplateSpecification, target_file_path: &str) {
-        let content = self.file_system.read_file_buffered(file_name.clone()).expect("issue to read file");
+    fn render_file_content_line_by_line(
+        &self,
+        file_name: &String,
+        template_specification: &TemplateSpecification,
+        target_file_path: &str,
+    ) {
+        let content = self
+            .file_system
+            .read_file_buffered(file_name.clone())
+            .expect("issue to read file");
 
         let renderer = self.template_renderer.lock().unwrap();
         for line in content {
@@ -118,19 +132,37 @@ mod tests {
             .expect_read_file_buffered()
             .with(eq(String::from("input/file1.txt")))
             .times(1)
-            .returning(|_| Ok(vec![String::from("file1"), String::from("file2"), String::from("file3")]));
+            .returning(|_| {
+                Ok(vec![
+                    String::from("file1"),
+                    String::from("file2"),
+                    String::from("file3"),
+                ])
+            });
         os_mock
             .expect_read_file_buffered()
             .with(eq(String::from("input/file2.txt")))
             .times(1)
-            .returning(|_| Ok(vec![String::from("file4"), String::from("file5"), String::from("file6")]));
+            .returning(|_| {
+                Ok(vec![
+                    String::from("file4"),
+                    String::from("file5"),
+                    String::from("file6"),
+                ])
+            });
         os_mock.expect_write_line_to_file().times(6).returning(|_, _| Ok(()));
 
         let mut template_renderer_mock = MockTemplateRenderer::new();
-        template_renderer_mock.expect_render().times(8).returning(|input, _| Ok(input));
+        template_renderer_mock
+            .expect_render()
+            .times(8)
+            .returning(|input, _| Ok(input));
 
         // act
-        let template_engine = TemplateEngine::new(&template_renderer_mock, &os_mock);
+        let template_engine = Arc::new(TemplateEngine::new(
+            Arc::new(Mutex::new(template_renderer_mock)),
+            Arc::new(os_mock),
+        ));
         let args = RenderPushArgument {
             input_root_path: String::from("input"),
             destination_path: String::from("destination"),
@@ -170,19 +202,37 @@ mod tests {
             .expect_read_file_buffered()
             .with(eq(String::from("input/file1.txt")))
             .times(1)
-            .returning(|_| Ok(vec![String::from("file1"), String::from("file2"), String::from("file3")]));
+            .returning(|_| {
+                Ok(vec![
+                    String::from("file1"),
+                    String::from("file2"),
+                    String::from("file3"),
+                ])
+            });
         os_mock
             .expect_read_file_buffered()
             .with(eq(String::from("input/file2.txt")))
             .times(1)
-            .returning(|_| Ok(vec![String::from("file4"), String::from("file5"), String::from("file6")]));
+            .returning(|_| {
+                Ok(vec![
+                    String::from("file4"),
+                    String::from("file5"),
+                    String::from("file6"),
+                ])
+            });
         os_mock.expect_write_line_to_file().times(6).returning(|_, _| Ok(()));
 
         let mut template_renderer_mock = MockTemplateRenderer::new();
-        template_renderer_mock.expect_render().times(8).returning(|_, _| Err(String::from("error")));
+        template_renderer_mock
+            .expect_render()
+            .times(8)
+            .returning(|_, _| Err(String::from("error")));
 
         // act
-        let template_engine = TemplateEngine::new(&template_renderer_mock, &os_mock);
+        let template_engine = Arc::new(TemplateEngine::new(
+            Arc::new(Mutex::new(template_renderer_mock)),
+            Arc::new(os_mock),
+        ));
         let args = RenderPushArgument {
             input_root_path: String::from("input"),
             destination_path: String::from("destination"),

@@ -88,9 +88,10 @@ mod tests {
     #[test]
     fn test_try_remove_cloned_folder_should_remove_folder() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
-        sut.try_remove_cloned_folder("/tmp/test").expect("failed to remove folder");
+        sut.try_remove_cloned_folder("/tmp/test")
+            .expect("failed to remove folder");
 
         // check if folder is removed
         let path_which_is_cloned = PathBuf::from_str("/tmp/test").unwrap();
@@ -100,7 +101,7 @@ mod tests {
     #[test]
     fn test_get_git_name_should_return_correct_name() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
         let git_name = sut.get_git_name("https://github.com/BuriKizilkaya/creatorly.git");
 
@@ -110,7 +111,7 @@ mod tests {
     #[test]
     fn test_get_git_name_from_azuredevops_return_correct_name() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
         let files = sut.load("https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo");
 
@@ -121,7 +122,7 @@ mod tests {
     #[test]
     fn test_load_should_return_correct_files() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
         let files: Result<FileList, String> = sut.load("https://github.com/BuriKizilkaya/creatorly.git");
 
