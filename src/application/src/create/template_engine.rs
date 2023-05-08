@@ -36,10 +36,10 @@ impl TemplateEngine {
         for file in files {
             info!("render file: {}", file.clone());
             let handle = tokio::spawn({
-                let cloned = Arc::clone(&self);
+                let cloned_self = Arc::clone(self);
                 let args = Arc::new(args.clone());
                 async move {
-                    cloned.process_file(file.clone(), args).await;
+                    cloned_self.process_file(file.clone(), args).await;
                 }
             });
             handles.push(handle);
@@ -53,26 +53,34 @@ impl TemplateEngine {
         Ok(())
     }
 
+    /// process one file
+    /// first it will render the filename and then the content of the file line by line
     async fn process_file(&self, file: String, args: Arc<RenderPushArgument>) {
-        let target_file_name = self.render_file_name(
-            file.clone(),
-            &args.template_specification,
-            &args.input_root_path,
-            &args.destination_path,
-        );
-        self.render_file_content_line_by_line(&file, &args.template_specification, &target_file_name.unwrap());
+        let target_file_name = self
+            .render_file_name(
+                file.clone(),
+                &args.template_specification,
+                &args.input_root_path,
+                &args.destination_path,
+            )
+            .await;
+
+        self.render_file_content_line_by_line(&file, &args.template_specification, &target_file_name.unwrap())
+            .await;
     }
 
     /// render the file name if it contains template token
-    fn render_file_name(
+    async fn render_file_name(
         &self,
         file_name: String,
         template_specification: &TemplateSpecification,
         input_root_path: &str,
         destination_path: &str,
     ) -> Result<String, String> {
-        let renderer = self.template_renderer.clone();
-        let renderd_file_name_result = renderer.render(file_name.clone(), template_specification.clone());
+        let renderd_file_name_result = self
+            .template_renderer
+            .render(file_name.clone(), template_specification.clone());
+
         let rendered_file_name = match renderd_file_name_result {
             Ok(renderd_file_name) => renderd_file_name,
             Err(error) => {
@@ -83,13 +91,14 @@ impl TemplateEngine {
 
         let renderd_file_name = rendered_file_name.replace(input_root_path, destination_path);
         self.file_system
-            .write_file(renderd_file_name.clone(), String::from(""))?;
+            .write_file(renderd_file_name.clone(), String::from(""))
+            .await?;
 
         Ok(renderd_file_name)
     }
 
     /// render the file content line by line
-    fn render_file_content_line_by_line(
+    async fn render_file_content_line_by_line(
         &self,
         file_name: &String,
         template_specification: &TemplateSpecification,
@@ -98,11 +107,13 @@ impl TemplateEngine {
         let content = self
             .file_system
             .read_file_buffered(file_name.clone())
+            .await
             .expect("issue to read file");
 
-        let renderer = self.template_renderer.clone();
         for line in content {
-            let renderd_line = renderer.render(line.clone(), template_specification.clone());
+            let renderd_line = self
+                .template_renderer
+                .render(line.clone(), template_specification.clone());
             let renderd_line = match renderd_line {
                 Ok(renderd_line) => renderd_line,
                 Err(error) => {
@@ -112,6 +123,7 @@ impl TemplateEngine {
             };
             self.file_system
                 .write_line_to_file(target_file_path, renderd_line)
+                .await
                 .expect("issue to write file");
         }
     }
@@ -124,8 +136,8 @@ mod tests {
     use mockall::predicate::eq;
     use std::vec;
 
-    #[test]
-    fn test_render_push_should_be_correct() {
+    #[tokio::test]
+    async fn test_render_push_should_be_correct() {
         // arrange
         let template_specification = TemplateSpecification::default();
 
@@ -178,24 +190,21 @@ mod tests {
             .returning(|input, _| Ok(input));
 
         // act
-        let template_engine = Arc::new(TemplateEngine::new(
-            Arc::new(Mutex::new(template_renderer_mock)),
-            Arc::new(os_mock),
-        ));
+        let template_engine = Arc::new(TemplateEngine::new(Arc::new(template_renderer_mock), Arc::new(os_mock)));
         let args = RenderPushArgument {
             input_root_path: String::from("input"),
             destination_path: String::from("destination"),
             file_list: file_list.clone(),
-            template_specification: template_specification,
+            template_specification,
         };
-        let result = template_engine.render_and_push(args);
+        let result = template_engine.render_and_push(args).await;
 
         // assert
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
     }
 
-    #[test]
-    fn test_render_push_should_return_same_input_if_rendering_has_failed() {
+    #[tokio::test]
+    async fn test_render_push_should_return_same_input_if_rendering_has_failed() {
         // arrange
         let template_specification = TemplateSpecification::default();
 
@@ -248,19 +257,16 @@ mod tests {
             .returning(|_, _| Err(String::from("error")));
 
         // act
-        let template_engine = Arc::new(TemplateEngine::new(
-            Arc::new(Mutex::new(template_renderer_mock)),
-            Arc::new(os_mock),
-        ));
+        let template_engine = Arc::new(TemplateEngine::new(Arc::new(template_renderer_mock), Arc::new(os_mock)));
         let args = RenderPushArgument {
             input_root_path: String::from("input"),
             destination_path: String::from("destination"),
             file_list: file_list.clone(),
-            template_specification: template_specification,
+            template_specification,
         };
-        let result = template_engine.render_and_push(args);
+        let result = template_engine.render_and_push(args).await;
 
         // assert
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
     }
 }

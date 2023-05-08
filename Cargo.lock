@@ -336,6 +336,7 @@ name = "infrastructure"
 version = "1.0.4"
 dependencies = [
  "application",
+ "async-trait",
  "indexmap",
  "liquid",
  "log",
@@ -345,6 +346,7 @@ dependencies = [
  "simplelog",
  "tempfile",
  "time",
+ "tokio",
  "walkdir",
 ]
 

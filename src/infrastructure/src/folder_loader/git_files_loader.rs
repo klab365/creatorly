@@ -116,7 +116,7 @@ mod tests {
         let files = sut.load("https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo");
 
         assert!(files.is_ok());
-        assert!(files.clone().unwrap().files.len() > 0);
+        assert!(!files.unwrap().files.is_empty());
     }
 
     #[test]
@@ -127,7 +127,7 @@ mod tests {
         let files: Result<FileList, String> = sut.load("https://github.com/BuriKizilkaya/creatorly.git");
 
         assert!(files.is_ok());
-        assert!(files.clone().unwrap().files.len() > 0);
+        assert!(!files.clone().unwrap().files.is_empty());
 
         // check if all .git folder is removed
         let found_files_indexes = files

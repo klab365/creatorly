@@ -16,6 +16,8 @@ liquid = "0.26.1"
 simplelog = "0.12"
 time = "0.3"
 log = { workspace = true }
+tokio = { workspace = true }
+async-trait = "0.1.68"
 
 [dev-dependencies]
 mockall = "0.11"
