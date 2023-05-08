@@ -1,10 +1,10 @@
-use std::sync::{Arc, Mutex};
-
 use super::{file_list::FileList, interfaces::TemplateRenderer, template_specification::TemplateSpecification};
 use crate::common::interfaces::Os;
 use log::{info, warn};
+use std::sync::Arc;
 
 /// Struct for the function of the template engine
+#[derive(Clone)]
 pub struct RenderPushArgument {
     pub input_root_path: String,
     pub destination_path: String,
@@ -12,14 +12,15 @@ pub struct RenderPushArgument {
     pub template_specification: TemplateSpecification,
 }
 
+#[derive(Clone)]
 pub struct TemplateEngine {
-    template_renderer: Arc<Mutex<dyn TemplateRenderer>>,
+    template_renderer: Arc<dyn TemplateRenderer>,
     file_system: Arc<dyn Os>,
 }
 
 impl TemplateEngine {
     /// create a new instance of the template engine
-    pub fn new(template_renderer: Arc<Mutex<dyn TemplateRenderer>>, file_system: Arc<dyn Os>) -> Self {
+    pub fn new(template_renderer: Arc<dyn TemplateRenderer>, file_system: Arc<dyn Os>) -> Self {
         Self {
             template_renderer,
             file_system,
@@ -27,32 +28,50 @@ impl TemplateEngine {
     }
 
     /// render files and push it directly to the destination path
-    pub fn render_and_push(&self, args: RenderPushArgument) -> Result<(), String> {
+    pub async fn render_and_push(self: &Arc<Self>, args: RenderPushArgument) -> Result<(), String> {
         let now = std::time::Instant::now();
 
-        for file in args.file_list.files {
-            let target_file_name = self.render_file_name(
-                &file,
-                &args.template_specification,
-                &args.input_root_path,
-                &args.destination_path,
-            )?;
-            self.render_file_content_line_by_line(&file, &args.template_specification, &target_file_name);
+        let mut handles = vec![];
+        let files = args.file_list.files.clone();
+        for file in files {
+            info!("render file: {}", file.clone());
+            let handle = tokio::spawn({
+                let cloned = Arc::clone(&self);
+                let args = Arc::new(args.clone());
+                async move {
+                    cloned.process_file(file.clone(), args).await;
+                }
+            });
+            handles.push(handle);
         }
 
-        info!("Rendered in {}ms", now.elapsed().as_millis());
+        for handle in handles {
+            let _ = handle.await;
+        }
+
+        info!("Files rendered in {}ms", now.elapsed().as_millis());
         Ok(())
+    }
+
+    async fn process_file(&self, file: String, args: Arc<RenderPushArgument>) {
+        let target_file_name = self.render_file_name(
+            file.clone(),
+            &args.template_specification,
+            &args.input_root_path,
+            &args.destination_path,
+        );
+        self.render_file_content_line_by_line(&file, &args.template_specification, &target_file_name.unwrap());
     }
 
     /// render the file name if it contains template token
     fn render_file_name(
         &self,
-        file_name: &String,
+        file_name: String,
         template_specification: &TemplateSpecification,
         input_root_path: &str,
         destination_path: &str,
     ) -> Result<String, String> {
-        let renderer = self.template_renderer.lock().unwrap();
+        let renderer = self.template_renderer.clone();
         let renderd_file_name_result = renderer.render(file_name.clone(), template_specification.clone());
         let rendered_file_name = match renderd_file_name_result {
             Ok(renderd_file_name) => renderd_file_name,
@@ -81,7 +100,7 @@ impl TemplateEngine {
             .read_file_buffered(file_name.clone())
             .expect("issue to read file");
 
-        let renderer = self.template_renderer.lock().unwrap();
+        let renderer = self.template_renderer.clone();
         for line in content {
             let renderd_line = renderer.render(line.clone(), template_specification.clone());
             let renderd_line = match renderd_line {

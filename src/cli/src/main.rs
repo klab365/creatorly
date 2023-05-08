@@ -22,11 +22,12 @@ enum Commands {
     Create(Create),
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     setup_logger();
 
     let cli = Cli::parse();
     match cli.command {
-        Commands::Create(create) => create::parse_command(create),
+        Commands::Create(create) => create::parse_command(create).await,
     }
 }

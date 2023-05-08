@@ -37,7 +37,7 @@ impl CreateService {
     }
 
     /// Create a project from a given template
-    pub fn create_project(&self, input: CreateProjectInput) -> Result<(), String> {
+    pub async fn create_project(&self, input: CreateProjectInput) -> Result<(), String> {
         if input.input_path.is_empty() {
             return Err("path is empty".to_string());
         }
@@ -62,7 +62,8 @@ impl CreateService {
             file_list: files,
             template_specification: template_configuration,
         };
-        self.template_engine.render_and_push(args)?;
+
+        self.template_engine.clone().render_and_push(args).await?;
 
         info!("project created!");
         Ok(())

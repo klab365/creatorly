@@ -3,7 +3,7 @@ use mockall::automock;
 
 /// interface for the file system
 #[cfg_attr(test, automock)]
-pub trait Os {
+pub trait Os: Send + Sync {
     /// Clear the folder and his subfolders
     fn clear_folder(&self, path: String) -> Result<(), String>;
 
