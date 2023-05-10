@@ -14,6 +14,7 @@ pub struct CreateProjectInput {
     pub destination_path: String,
 }
 
+/// Structure for the create service
 pub struct CreateService {
     folder_loader: Arc<dyn FileListLoader>,
     configuration_loader: Arc<dyn ConfigurationLoader>,
@@ -62,26 +63,25 @@ impl CreateService {
             file_list: files,
             template_specification: template_configuration,
         };
+        self.template_engine.render_and_push(args).await?;
 
-        self.template_engine.clone().render_and_push(args).await?;
-
-        info!("project created!");
+        info!("🎉 project created!");
         Ok(())
     }
 
-    // get template configuration from the template path
+    // get template configuration from the template path and remove it from the file list
     fn get_template_configuration(&self, files: &mut FileList) -> Result<TemplateSpecification, String> {
-        let found_file = files
+        let found_creatorly_file = files
             .files
             .iter()
             .enumerate()
             .find(|file| file.1.contains("creatorly.yaml") || file.1.contains("creatorly.yml"));
 
-        if found_file.is_none() {
+        if found_creatorly_file.is_none() {
             return Err("creatorly.yaml not found".to_string());
         }
 
-        let found_file = found_file.unwrap();
+        let found_file = found_creatorly_file.unwrap();
         let specification = self.configuration_loader.load_configuration(found_file.1.to_string())?;
 
         files.files.remove(found_file.0);
@@ -92,7 +92,6 @@ impl CreateService {
     fn load_files(&self, input_path: &str) -> Result<FileList, String> {
         let files = self.folder_loader.load(input_path)?;
         info!("found {} files on template project", files.files.len());
-
         Ok(files)
     }
 

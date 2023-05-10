@@ -1,5 +1,6 @@
 use super::{file_list::FileList, interfaces::TemplateRenderer, template_specification::TemplateSpecification};
 use crate::common::interfaces::Os;
+use ::futures::future::join_all;
 use log::{info, warn};
 use std::sync::Arc;
 
@@ -34,7 +35,6 @@ impl TemplateEngine {
         let mut handles = vec![];
         let files = args.file_list.files.clone();
         for file in files {
-            info!("render file: {}", file.clone());
             let handle = tokio::spawn({
                 let cloned_self = Arc::clone(self);
                 let args = Arc::new(args.clone());
@@ -45,10 +45,7 @@ impl TemplateEngine {
             handles.push(handle);
         }
 
-        for handle in handles {
-            let _ = handle.await;
-        }
-
+        join_all(handles).await;
         info!("Files rendered in {}ms", now.elapsed().as_millis());
         Ok(())
     }
@@ -114,6 +111,7 @@ impl TemplateEngine {
             let renderd_line = self
                 .template_renderer
                 .render(line.clone(), template_specification.clone());
+
             let renderd_line = match renderd_line {
                 Ok(renderd_line) => renderd_line,
                 Err(error) => {
@@ -121,6 +119,7 @@ impl TemplateEngine {
                     line.clone()
                 }
             };
+
             self.file_system
                 .write_line_to_file(target_file_path, renderd_line)
                 .await

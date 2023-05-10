@@ -10,6 +10,7 @@ use infrastructure::{
 };
 use std::sync::Arc;
 
+/// Create cli command
 #[derive(Args)]
 pub struct Create {
     /// command
