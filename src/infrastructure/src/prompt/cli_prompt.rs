@@ -44,7 +44,10 @@ impl Prompt for CliPrompt {
                 let mut answer = String::new();
                 let stdin = io::stdin();
                 stdin.read_line(&mut answer).expect("issue to read line");
-                let index = answer.trim().parse::<usize>().unwrap_or(CliPrompt::DEFAULT_INDEX_MULTIPLE_CHOICE);
+                let index = answer
+                    .trim()
+                    .parse::<usize>()
+                    .unwrap_or(CliPrompt::DEFAULT_INDEX_MULTIPLE_CHOICE);
 
                 if index - 1 > choices.len() {
                     println!("index doesn't exist");

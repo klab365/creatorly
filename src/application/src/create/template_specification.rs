@@ -77,7 +77,10 @@ mod tests {
         // assert
         assert_eq!(sut.questions.len(), 1);
         assert_eq!(sut.questions[0].template_key, "project_name");
-        assert_eq!(sut.questions[0].get_single_choice(), Some(&String::from("DemoBoilerplate")));
+        assert_eq!(
+            sut.questions[0].get_single_choice(),
+            Some(&String::from("DemoBoilerplate"))
+        );
         assert_eq!(sut.questions[0].answer, "DemoBoilerplate");
     }
 
@@ -95,7 +98,10 @@ mod tests {
         assert_eq!(sut.questions.len(), 1);
         assert_eq!(sut.questions[0].template_key, "licence");
         assert_eq!(sut.questions[0].answer, "MIT");
-        assert_eq!(sut.questions[0].get_multiple_choice(), Some(&vec![String::from("MIT"), String::from("GPL")]));
+        assert_eq!(
+            sut.questions[0].get_multiple_choice(),
+            Some(&vec![String::from("MIT"), String::from("GPL")])
+        );
     }
 
     #[test]
@@ -112,6 +118,9 @@ mod tests {
         assert_eq!(sut.questions.len(), 1);
         assert_eq!(sut.questions[0].template_key, "licence");
         assert_eq!(sut.questions[0].answer, "Apache");
-        assert_eq!(sut.questions[0].get_multiple_choice(), Some(&vec![String::from("MIT"), String::from("GPL")]));
+        assert_eq!(
+            sut.questions[0].get_multiple_choice(),
+            Some(&vec![String::from("MIT"), String::from("GPL")])
+        );
     }
 }

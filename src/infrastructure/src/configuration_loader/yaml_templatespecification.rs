@@ -1,4 +1,6 @@
-use application::create::template_specification::{TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType};
+use application::create::template_specification::{
+    TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType,
+};
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
@@ -16,9 +18,10 @@ impl From<YamlTemplateSpecification> for TemplateSpecification {
         for (key, value) in yaml_template_specification.questions {
             match value {
                 Value::String(choice) => {
-                    template
-                        .questions
-                        .push(TemplateSpecificationItem::new(key, TemplateSpecificationItemType::SingleChoice(choice)));
+                    template.questions.push(TemplateSpecificationItem::new(
+                        key,
+                        TemplateSpecificationItemType::SingleChoice(choice),
+                    ));
                 }
                 Value::Sequence(choices) => {
                     let mut choices_tmp: Vec<String> = Vec::new();
@@ -27,9 +30,10 @@ impl From<YamlTemplateSpecification> for TemplateSpecification {
                             choices_tmp.push(answer);
                         }
                     }
-                    template
-                        .questions
-                        .push(TemplateSpecificationItem::new(key, TemplateSpecificationItemType::MultipleChoice(choices_tmp)));
+                    template.questions.push(TemplateSpecificationItem::new(
+                        key,
+                        TemplateSpecificationItemType::MultipleChoice(choices_tmp),
+                    ));
                 }
                 _ => {}
             }
@@ -45,7 +49,9 @@ mod tests {
 
     #[test]
     fn test_yaml_template_specification_to_template_spec() {
-        let mut yaml_template_specification = YamlTemplateSpecification { questions: IndexMap::new() };
+        let mut yaml_template_specification = YamlTemplateSpecification {
+            questions: IndexMap::new(),
+        };
         yaml_template_specification
             .questions
             .insert("project_name".to_string(), Value::String("DemoBoilerplate".to_string()));
@@ -58,14 +64,22 @@ mod tests {
 
         assert_eq!(template_specification.questions.len(), 2);
         assert_eq!(template_specification.questions[0].template_key, "project_name");
-        assert_eq!(template_specification.questions[0].get_single_choice().unwrap(), "DemoBoilerplate");
+        assert_eq!(
+            template_specification.questions[0].get_single_choice().unwrap(),
+            "DemoBoilerplate"
+        );
         assert_eq!(template_specification.questions[1].template_key, "project_type");
-        assert_eq!(template_specification.questions[1].get_multiple_choice().unwrap().len(), 2);
+        assert_eq!(
+            template_specification.questions[1].get_multiple_choice().unwrap().len(),
+            2
+        );
     }
 
     #[test]
     fn test_template_specification_from_yaml_template_specification() {
-        let mut yaml_template_specification = YamlTemplateSpecification { questions: IndexMap::new() };
+        let mut yaml_template_specification = YamlTemplateSpecification {
+            questions: IndexMap::new(),
+        };
         yaml_template_specification
             .questions
             .insert("project_name".to_string(), Value::String("DemoBoilerplate".to_string()));
@@ -78,8 +92,14 @@ mod tests {
 
         assert_eq!(template_specification.questions.len(), 2);
         assert_eq!(template_specification.questions[0].template_key, "project_name");
-        assert_eq!(template_specification.questions[0].get_single_choice().unwrap(), "DemoBoilerplate");
+        assert_eq!(
+            template_specification.questions[0].get_single_choice().unwrap(),
+            "DemoBoilerplate"
+        );
         assert_eq!(template_specification.questions[1].template_key, "project_type");
-        assert_eq!(template_specification.questions[1].get_multiple_choice().unwrap().len(), 2);
+        assert_eq!(
+            template_specification.questions[1].get_multiple_choice().unwrap().len(),
+            2
+        );
     }
 }
