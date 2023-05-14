@@ -1,0 +1,14 @@
+ifndef::imagesdir[:imagesdir: ../.images]
+
+[[section-introduction-and-goals]]
+== Introduction and Goals
+
+Creatorly is a application, which makes the creation of projects easier. The application reads from a template project and creates a project from it. Before it creates the new project, it will do some manipulations on the files. The manipulations are replacing specific places with defined tokens.
+
+=== Quality Goals
+
+n.a.
+
+=== Stakeholders
+
+n.a.
