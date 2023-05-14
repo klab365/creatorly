@@ -1,14 +1,14 @@
 use application::create::{file_list::FileList, interfaces::FileListLoader};
-use std::{path::PathBuf, process::Command, str::FromStr};
+use std::{path::PathBuf, process::Command, str::FromStr, sync::Arc};
 
-pub struct GitFileListLoader<'a> {
-    file_list_loader: &'a dyn FileListLoader,
+pub struct GitFileListLoader {
+    file_list_loader: Arc<dyn FileListLoader>,
     local_storage_path: String,
     branch_name: String,
 }
 
-impl<'a> GitFileListLoader<'a> {
-    pub fn new(file_list_loader: &'a dyn FileListLoader, local_storage_path: String, branch_name: String) -> Self {
+impl GitFileListLoader {
+    pub fn new(file_list_loader: Arc<dyn FileListLoader>, local_storage_path: String, branch_name: String) -> Self {
         Self {
             file_list_loader,
             local_storage_path,
@@ -62,7 +62,7 @@ impl<'a> GitFileListLoader<'a> {
     }
 }
 
-impl<'a> FileListLoader for GitFileListLoader<'a> {
+impl FileListLoader for GitFileListLoader {
     fn load(&self, remote_git_url: &str) -> Result<FileList, String> {
         let repo_name = self.get_git_name(remote_git_url);
         let path_which_is_cloned = format!("{}{}", self.local_storage_path, repo_name);
@@ -88,9 +88,10 @@ mod tests {
     #[test]
     fn test_try_remove_cloned_folder_should_remove_folder() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
-        sut.try_remove_cloned_folder("/tmp/test").expect("failed to remove folder");
+        sut.try_remove_cloned_folder("/tmp/test")
+            .expect("failed to remove folder");
 
         // check if folder is removed
         let path_which_is_cloned = PathBuf::from_str("/tmp/test").unwrap();
@@ -100,7 +101,7 @@ mod tests {
     #[test]
     fn test_get_git_name_should_return_correct_name() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
         let git_name = sut.get_git_name("https://github.com/BuriKizilkaya/creatorly.git");
 
@@ -110,23 +111,23 @@ mod tests {
     #[test]
     fn test_get_git_name_from_azuredevops_return_correct_name() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
         let files = sut.load("https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo");
 
         assert!(files.is_ok());
-        assert!(files.clone().unwrap().files.len() > 0);
+        assert!(!files.unwrap().files.is_empty());
     }
 
     #[test]
     fn test_load_should_return_correct_files() {
         let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(&file_list_loader_mock, "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
 
         let files: Result<FileList, String> = sut.load("https://github.com/BuriKizilkaya/creatorly.git");
 
         assert!(files.is_ok());
-        assert!(files.clone().unwrap().files.len() > 0);
+        assert!(!files.clone().unwrap().files.is_empty());
 
         // check if all .git folder is removed
         let found_files_indexes = files

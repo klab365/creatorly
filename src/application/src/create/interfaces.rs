@@ -20,7 +20,7 @@ pub trait FileListLoader {
 /// This interface is used to render the input with the given template specification
 /// The input can be the content of a file or a path to a file
 #[cfg_attr(test, automock)]
-pub trait TemplateRenderer {
+pub trait TemplateRenderer: Send + Sync {
     /// render the input with the given template specification
     fn render(&self, input: String, config: TemplateSpecification) -> Result<String, String>;
 }

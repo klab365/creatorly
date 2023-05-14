@@ -51,14 +51,14 @@ mod tests {
         let mut example_project_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         example_project_path.push("resources/test");
         example_project_path.push("test_project");
-        let file_list = loader.load(&example_project_path.to_str().unwrap().to_string()).unwrap();
+        let file_list = loader.load(example_project_path.to_str().unwrap()).unwrap();
 
         let file_entry1 = example_project_path.join("test_dir1").join("test2.txt");
         let file_entry2 = example_project_path.join("test.txt");
 
         assert_eq!(file_list.files.len(), 2);
-        assert_eq!(file_list.files.contains(&file_entry1.to_str().unwrap().to_string()), true);
-        assert_eq!(file_list.files.contains(&file_entry2.to_str().unwrap().to_string()), true);
+        assert!(file_list.files.contains(&file_entry1.to_str().unwrap().to_string()));
+        assert!(file_list.files.contains(&file_entry2.to_str().unwrap().to_string()));
     }
 
     #[test]

@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.0.4 - 14.05.2023
+
+### Added
+
+* Add support for async with tokio: The files will be rendered in parallel.
+
 ## 1.0.3 - 23.04.2023
 
 ### Fix

@@ -18,8 +18,8 @@ curl https://raw.githubusercontent.com/BuriKizilkaya/creatorly/main/install.sh |
 
 Here are some documentations about the project:
 
-* [Usage](docs/usage/usage.md)
-* [Architecture](docs/architecture/architecture.md)
+* [Usage](docs/usage/usage.adoc)
+* [Architecture](docs/architecture/architecture.adoc)
 
 ## Contributing
 
@@ -28,6 +28,6 @@ Here are some documentations about the project:
 To release a new version, follow these steps:
 
 1. Update the version in `Cargo.toml`
-2. Run `release-plz update` to generate a new changelog
+2. Adjust `CHANGELOG.md`
 3. Commit the changes and create a new PR
 4. Once the PR is merged, create a git tag with the version number and push it to the repository

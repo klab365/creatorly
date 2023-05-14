@@ -1,0 +1,9 @@
+ifndef::imagesdir[:imagesdir: ../.images]
+
+[[section-design-decisions]]
+== Architecture Decisions
+
+=== Programming Language
+
+The project is written with Rust. Rust is choosen, because for learning purpose.
+

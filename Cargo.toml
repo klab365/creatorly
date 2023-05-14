@@ -3,7 +3,8 @@ members = ["src/application", "src/infrastructure", "src/cli"]
 
 [workspace.package]
 authors = ["Burak Kizilkaya <burak.kizilkaya@outlook.com>"]
-version = "1.0.3"
+version = "1.0.4"
 
 [workspace.dependencies]
 log = "0.4"
+tokio = { version = "1.28.0", features = ["full"] }

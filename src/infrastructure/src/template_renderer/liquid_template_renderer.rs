@@ -7,7 +7,10 @@ fn map_to_liquid_object(value: TemplateSpecification) -> liquid::Object {
     let mut data = liquid::Object::new();
 
     for template_item in value.questions {
-        data.insert(template_item.template_key.into(), Value::scalar(template_item.answer.to_string()));
+        data.insert(
+            template_item.template_key.into(),
+            Value::scalar(template_item.answer.to_string()),
+        );
     }
 
     data
@@ -45,7 +48,9 @@ mod tests {
             item: TemplateSpecificationItemType::SingleChoice("Max".to_string()),
             answer: "Max".to_string(),
         });
-        let output = liquid_template_renderer.render("Hello {{name}}!".to_string(), data).unwrap();
+        let output = liquid_template_renderer
+            .render("Hello {{name}}!".to_string(), data)
+            .unwrap();
         assert_eq!(output, "Hello Max!");
     }
 

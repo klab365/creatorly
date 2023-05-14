@@ -56,11 +56,16 @@ mod tests {
         ));
 
         // act
-        let template_specification = sut.load_configuration(yaml_config_file.to_string_lossy().to_string()).unwrap();
+        let template_specification = sut
+            .load_configuration(yaml_config_file.to_string_lossy().to_string())
+            .unwrap();
 
         // assert
         for (index, template_item) in template_specification.questions.iter().enumerate() {
-            assert_eq!(template_item.template_key, expected_template.questions[index].template_key);
+            assert_eq!(
+                template_item.template_key,
+                expected_template.questions[index].template_key
+            );
             match &template_item.item {
                 TemplateSpecificationItemType::SingleChoice(choice) => match &expected_template.questions[index].item {
                     TemplateSpecificationItemType::SingleChoice(expected_choice) => {
@@ -68,12 +73,14 @@ mod tests {
                     }
                     _ => {}
                 },
-                TemplateSpecificationItemType::MultipleChoice(choices) => match &expected_template.questions[index].item {
-                    TemplateSpecificationItemType::MultipleChoice(expected_choices) => {
-                        assert_eq!(choices, expected_choices);
+                TemplateSpecificationItemType::MultipleChoice(choices) => {
+                    match &expected_template.questions[index].item {
+                        TemplateSpecificationItemType::MultipleChoice(expected_choices) => {
+                            assert_eq!(choices, expected_choices);
+                        }
+                        _ => {}
                     }
-                    _ => {}
-                },
+                }
             }
         }
     }
