@@ -15,6 +15,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "rust-lang.rust-analyzer",
         "GitHub.copilot",
         "mhutchie.git-graph",
         "Swellaby.vscode-rust-test-adapter",

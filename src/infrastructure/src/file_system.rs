@@ -1,4 +1,4 @@
-use application::common::interfaces::Os;
+use application::file_system::FileSystemInterface;
 use std::io::Write;
 use std::path::PathBuf;
 use tokio::{
@@ -9,7 +9,7 @@ use tokio::{
 pub struct FileSystem {}
 
 #[async_trait::async_trait]
-impl Os for FileSystem {
+impl FileSystemInterface for FileSystem {
     async fn clear_folder(&self, path: String) -> Result<(), String> {
         tokio::fs::remove_dir_all(path).await.expect("issue to remove");
         Ok(())

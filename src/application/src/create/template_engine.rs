@@ -1,5 +1,5 @@
 use super::{file_list::FileList, interfaces::TemplateRenderer, template_specification::TemplateSpecification};
-use crate::common::interfaces::Os;
+use crate::file_system::FileSystemInterface;
 use ::futures::future::join_all;
 use log::{info, warn};
 use std::sync::Arc;
@@ -16,12 +16,12 @@ pub struct RenderPushArgument {
 #[derive(Clone)]
 pub struct TemplateEngine {
     template_renderer: Arc<dyn TemplateRenderer>,
-    file_system: Arc<dyn Os>,
+    file_system: Arc<dyn FileSystemInterface>,
 }
 
 impl TemplateEngine {
     /// create a new instance of the template engine
-    pub fn new(template_renderer: Arc<dyn TemplateRenderer>, file_system: Arc<dyn Os>) -> Self {
+    pub fn new(template_renderer: Arc<dyn TemplateRenderer>, file_system: Arc<dyn FileSystemInterface>) -> Self {
         Self {
             template_renderer,
             file_system,
@@ -131,7 +131,7 @@ impl TemplateEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{common::interfaces::MockOs, create::interfaces::MockTemplateRenderer};
+    use crate::{create::interfaces::MockTemplateRenderer, file_system::MockFileSystemInterface};
     use mockall::predicate::eq;
     use std::vec;
 
@@ -147,7 +147,7 @@ mod tests {
         file_list.add(first_file_path);
         file_list.add(second_file_path);
 
-        let mut os_mock = MockOs::new();
+        let mut os_mock = MockFileSystemInterface::new();
         os_mock
             .expect_write_file()
             .with(eq(String::from("destination/file1.txt")), eq(String::from("")))
@@ -214,7 +214,7 @@ mod tests {
         file_list.add(first_file_path);
         file_list.add(second_file_path);
 
-        let mut os_mock = MockOs::new();
+        let mut os_mock = MockFileSystemInterface::new();
         os_mock
             .expect_write_file()
             .with(eq(String::from("destination/file1.txt")), eq(String::from("")))
