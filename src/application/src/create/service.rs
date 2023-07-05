@@ -48,7 +48,7 @@ impl CreateService {
         }
 
         // load file list
-        let mut files = self.load_files(&input.input_path)?;
+        let mut files = self.load_files()?;
 
         // load template specification
         let mut template_configuration = self.get_template_configuration(&mut files)?;
@@ -89,8 +89,8 @@ impl CreateService {
         Ok(specification)
     }
 
-    fn load_files(&self, input_path: &str) -> Result<FileList, String> {
-        let files = self.folder_loader.load(input_path)?;
+    fn load_files(&self) -> Result<FileList, String> {
+        let files = self.folder_loader.load()?;
         info!("found {} files on template project", files.files.len());
         Ok(files)
     }

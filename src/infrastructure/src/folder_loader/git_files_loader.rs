@@ -1,29 +1,31 @@
 use application::create::{file_list::FileList, interfaces::FileListLoader};
-use std::{path::PathBuf, process::Command, str::FromStr, sync::Arc};
+use std::{path::PathBuf, process::Command, str::FromStr};
+
+use super::local_file_loader::LocalFileListLoader;
 
 pub struct GitFileListLoader {
-    file_list_loader: Arc<dyn FileListLoader>,
     local_storage_path: String,
     branch_name: String,
+    remote_git_url: String,
 }
 
 impl GitFileListLoader {
-    pub fn new(file_list_loader: Arc<dyn FileListLoader>, local_storage_path: String, branch_name: String) -> Self {
+    pub fn new(remote_git_url: String, local_storage_path: String, branch_name: String) -> Self {
         Self {
-            file_list_loader,
             local_storage_path,
             branch_name,
+            remote_git_url,
         }
     }
 
-    fn get_git_name(&self, git_url: &str) -> String {
-        let git_url_split = git_url.split('/').collect::<Vec<&str>>();
+    fn get_git_name(&self) -> String {
+        let git_url_split = self.remote_git_url.split('/').collect::<Vec<&str>>();
         let git_name = git_url_split[git_url_split.len() - 1];
         git_name.replace(".git", "")
     }
 
     fn execute_git_clone(&self, git_url: &str) -> Result<(), String> {
-        let git_name = self.get_git_name(git_url);
+        let git_name = self.get_git_name();
         let path_which_is_cloned = format!("{}{}", self.local_storage_path, git_name);
         let mut git_clone_cmd = Command::new("git");
         git_clone_cmd
@@ -63,15 +65,16 @@ impl GitFileListLoader {
 }
 
 impl FileListLoader for GitFileListLoader {
-    fn load(&self, remote_git_url: &str) -> Result<FileList, String> {
-        let repo_name = self.get_git_name(remote_git_url);
+    fn load(&self) -> Result<FileList, String> {
+        let repo_name = self.get_git_name();
         let path_which_is_cloned = format!("{}{}", self.local_storage_path, repo_name);
 
         self.try_remove_cloned_folder(&path_which_is_cloned)?;
 
-        self.execute_git_clone(remote_git_url)?;
+        self.execute_git_clone(&self.remote_git_url)?;
 
-        let files = self.file_list_loader.load(&path_which_is_cloned)?;
+        let file_list_loader = LocalFileListLoader::new(path_which_is_cloned);
+        let files = file_list_loader.load()?;
 
         let filterd_files = self.remove_hidden_git_folder(files);
 
@@ -82,13 +85,15 @@ impl FileListLoader for GitFileListLoader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::folder_loader::local_file_loader::LocalFileListLoader;
     use std::{path::PathBuf, str::FromStr};
 
     #[test]
     fn test_try_remove_cloned_folder_should_remove_folder() {
-        let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(
+            "https://github.com/BuriKizilkaya/creatorly.git".to_string(),
+            "/tmp/".to_string(),
+            "main".to_string(),
+        );
 
         sut.try_remove_cloned_folder("/tmp/test")
             .expect("failed to remove folder");
@@ -99,32 +104,40 @@ mod tests {
     }
 
     #[test]
-    fn test_get_git_name_should_return_correct_name() {
-        let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
+    fn test_get_git_name_from_github_should_return_correct_name() {
+        let sut = GitFileListLoader::new(
+            "https://github.com/BuriKizilkaya/creatorly.git".to_string(),
+            "/tmp/".to_string(),
+            "main".to_string(),
+        );
 
-        let git_name = sut.get_git_name("https://github.com/BuriKizilkaya/creatorly.git");
+        let git_name = sut.get_git_name();
 
         assert_eq!(git_name, "creatorly");
     }
 
     #[test]
     fn test_get_git_name_from_azuredevops_return_correct_name() {
-        let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(
+            "https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo".to_string(),
+            "/tmp/".to_string(),
+            "main".to_string(),
+        );
 
-        let files = sut.load("https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo");
+        let git_name = sut.get_git_name();
 
-        assert!(files.is_ok());
-        assert!(!files.unwrap().files.is_empty());
+        assert_eq!(git_name, "Demo");
     }
 
     #[test]
     fn test_load_should_return_correct_files() {
-        let file_list_loader_mock = LocalFileListLoader::default();
-        let sut = GitFileListLoader::new(Arc::new(file_list_loader_mock), "/tmp/".to_string(), "main".to_string());
+        let sut = GitFileListLoader::new(
+            "https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo".to_string(),
+            "/tmp/".to_string(),
+            "main".to_string(),
+        );
 
-        let files: Result<FileList, String> = sut.load("https://github.com/BuriKizilkaya/creatorly.git");
+        let files: Result<FileList, String> = sut.load();
 
         assert!(files.is_ok());
         assert!(!files.clone().unwrap().files.is_empty());
@@ -138,6 +151,7 @@ mod tests {
             .filter(|file| file.1.contains(".git/"))
             .map(|(index, _)| index)
             .collect::<Vec<_>>();
+
         assert_eq!(found_files_indexes.len(), 0);
     }
 }
