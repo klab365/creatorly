@@ -15,7 +15,7 @@ use std::sync::Arc;
 pub struct Create {
     /// command
     #[command(subcommand)]
-    sub_commands: CreateSubCommands,
+    sub_command: CreateSubCommands,
 }
 
 #[derive(Subcommand)]
@@ -59,27 +59,27 @@ pub async fn parse_command(create: Create) {
     let file_system = Arc::new(FileSystem {});
     let prompt = Arc::new(CliPrompt {});
     let liquid_template_renderer = Arc::new(LiquidTemplateRenderer {});
-    let local_file_list_loader = Arc::new(LocalFileListLoader::default());
     let template_engine = Arc::new(TemplateEngine::new(liquid_template_renderer, file_system));
 
-    match create.sub_commands {
-        CreateSubCommands::Local(_local_create) => {
+    match create.sub_command {
+        CreateSubCommands::Local(local_create) => {
+            let local_file_list_loader = Arc::new(LocalFileListLoader::new(local_create.template_path.clone()));
             let input = CreateProjectInput {
-                input_path: _local_create.template_path.trim_end_matches('/').to_string(),
-                destination_path: _local_create.destination_path.trim_end_matches('/').to_string(),
+                input_path: local_create.template_path.trim_end_matches('/').to_string(),
+                destination_path: local_create.destination_path.trim_end_matches('/').to_string(),
             };
             let service = CreateService::new(local_file_list_loader, configuration_loader, prompt, template_engine);
             service.create_project(input).await.unwrap();
         }
-        CreateSubCommands::Git(_git_create) => {
+        CreateSubCommands::Git(git_create) => {
             let git_file_list_loader = Arc::new(GitFileListLoader::new(
-                local_file_list_loader,
+                git_create.remote_path.clone(),
                 "/tmp/".to_string(),
-                _git_create.branch,
+                git_create.branch,
             ));
             let input: CreateProjectInput = CreateProjectInput {
-                input_path: _git_create.remote_path,
-                destination_path: _git_create.destination_path.trim_end_matches('/').to_string(),
+                input_path: git_create.remote_path,
+                destination_path: git_create.destination_path.trim_end_matches('/').to_string(),
             };
             let service = CreateService::new(git_file_list_loader, configuration_loader, prompt, template_engine);
             service.create_project(input).await.unwrap();

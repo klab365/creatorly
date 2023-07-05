@@ -14,7 +14,7 @@ pub trait ConfigurationLoader {
 // This interface is used to load the file tree from the given path
 #[cfg_attr(test, automock)]
 pub trait FileListLoader {
-    fn load(&self, path: &str) -> Result<FileList, String>;
+    fn load(&self) -> Result<FileList, String>;
 }
 
 /// This interface is used to render the input with the given template specification
