@@ -68,7 +68,7 @@ checksum = "d301b3b94cb4b2f23d7917810addbbaff90738e0ca2be692bd027e70d7e0330c"
 
 [[package]]
 name = "application"
-version = "1.0.4"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -186,7 +186,7 @@ dependencies = [
 
 [[package]]
 name = "creatorly"
-version = "1.0.4"
+version = "1.1.0"
 dependencies = [
  "application",
  "clap",
@@ -423,7 +423,7 @@ dependencies = [
 
 [[package]]
 name = "infrastructure"
-version = "1.0.4"
+version = "1.1.0"
 dependencies = [
  "application",
  "async-trait",

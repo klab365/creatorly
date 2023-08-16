@@ -1,19 +1,24 @@
-use application::create::{interfaces::TemplateRenderer, template_specification::TemplateSpecification};
+use application::generate::{
+    interfaces::TemplateRenderer,
+    template_specification::{TemplateSpecification, TemplateSpecificationItem},
+};
 use liquid::model::Value;
 
 pub struct LiquidTemplateRenderer {}
 
 fn map_to_liquid_object(value: TemplateSpecification) -> liquid::Object {
-    let mut data = liquid::Object::new();
-
+    let mut creatorly_data: liquid::Object = liquid::Object::new();
     for template_item in value.questions {
-        data.insert(
-            template_item.template_key.into(),
-            Value::scalar(template_item.answer.to_string()),
+        creatorly_data.insert(
+            template_item.get_template_key().into(),
+            Value::scalar(template_item.get_answer().to_string()),
         );
     }
 
-    data
+    let mut root = liquid::Object::new();
+    root.insert(TemplateSpecificationItem::PREFIX.into(), Value::Object(creatorly_data));
+
+    root
 }
 
 impl TemplateRenderer for LiquidTemplateRenderer {
@@ -35,7 +40,7 @@ impl TemplateRenderer for LiquidTemplateRenderer {
 
 #[cfg(test)]
 mod tests {
-    use application::create::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
+    use application::generate::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
 
     use super::*;
 
@@ -43,14 +48,16 @@ mod tests {
     fn render_should_return_rendered_value() {
         let liquid_template_renderer = LiquidTemplateRenderer {};
         let mut data = TemplateSpecification { questions: Vec::new() };
-        data.questions.push(TemplateSpecificationItem {
-            template_key: "name".to_string(),
-            item: TemplateSpecificationItemType::SingleChoice("Max".to_string()),
-            answer: "Max".to_string(),
-        });
+        let mut template_item = TemplateSpecificationItem::new(
+            "name".to_string(),
+            TemplateSpecificationItemType::SingleChoice("Max".to_string()),
+        );
+        template_item.set_answer("Max".to_string());
+        data.questions.push(template_item);
         let output = liquid_template_renderer
-            .render("Hello {{name}}!".to_string(), data)
+            .render("Hello {{ creatorly.name }}!".to_string(), data)
             .unwrap();
+
         assert_eq!(output, "Hello Max!");
     }
 
@@ -74,11 +81,10 @@ mod tests {
     fn render_should_input_without_render() {
         let liquid_template_renderer = LiquidTemplateRenderer {};
         let mut data = TemplateSpecification { questions: Vec::new() };
-        data.questions.push(TemplateSpecificationItem {
-            template_key: "name".to_string(),
-            item: TemplateSpecificationItemType::SingleChoice("Max".to_string()),
-            answer: "Max".to_string(),
-        });
+        data.questions.push(TemplateSpecificationItem::new(
+            "name".to_string(),
+            TemplateSpecificationItemType::SingleChoice("Max".to_string()),
+        ));
         let output = liquid_template_renderer.render("Hello Max!".to_string(), data).unwrap();
         assert_eq!(output, "Hello Max!");
     }

@@ -1,11 +1,12 @@
-# {{ project_name }} Documentation
+# {{ creatorly.project_name }} Documentation
 
 This project is generated from a template!
 
 ## Empty {{ }}
 
-## Variable doesn't exists {{ test }}
+## Variable doesn't exists {{ creatorly.test }}
 
-## Wrong token
+## Exclude some text not be rendered
 
-- ${{ if startsWith(variables['build.sourceBranch'], 'refs/tags/') }}
+- {% raw %}${{ if startsWith(variables['build.sourceBranch'], 'refs/tags/') }}{% endraw %}
+- {% raw %}${{ env.{% endraw %}{{ creatorly.project_name }} {% raw %}}}{% endraw %}
