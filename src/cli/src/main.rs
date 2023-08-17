@@ -2,10 +2,10 @@
 #![warn(unused_extern_crates)]
 
 use clap::{command, Parser, Subcommand};
-use create::Create;
+use generate::Generate;
 use infrastructure::logger::setup_logger;
 
-mod create;
+mod generate;
 
 #[derive(Parser)]
 #[command(author, version)]
@@ -18,8 +18,8 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Create a new project from a template
-    Create(Create),
+    /// Generate a new project from a template
+    Generate(Generate),
 }
 
 #[tokio::main]
@@ -28,6 +28,6 @@ async fn main() {
 
     let cli = Cli::parse();
     match cli.command {
-        Commands::Create(create) => create::parse_command(create).await,
+        Commands::Generate(generate) => generate::parse_command(generate).await,
     }
 }

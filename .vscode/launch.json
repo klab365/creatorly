@@ -20,7 +20,7 @@
         }
       },
       "args": [
-        "create",
+        "generate",
         "local",
         "-t",
         "${workspaceFolder}/assets/example_project",

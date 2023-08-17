@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/rust:bullseye
+FROM mcr.microsoft.com/devcontainers/rust:1
 
 USER vscode
 

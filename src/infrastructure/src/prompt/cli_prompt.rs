@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 
-use application::create::{
+use application::generate::{
     interfaces::Prompt,
     template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType},
 };
@@ -13,9 +13,9 @@ impl CliPrompt {
 
 impl Prompt for CliPrompt {
     fn get_answer(&self, template_specification_item: &mut TemplateSpecificationItem) {
-        match &template_specification_item.item {
+        match &template_specification_item.get_item() {
             TemplateSpecificationItemType::SingleChoice(choice) => {
-                print!("{} ({}): ", template_specification_item.template_key, choice);
+                print!("❓ {} ({}): ", template_specification_item.get_template_key(), choice);
                 io::stdout().flush().unwrap();
 
                 let mut answer = String::new();
@@ -29,14 +29,14 @@ impl Prompt for CliPrompt {
                     .to_string();
 
                 if cleaned_answer.is_empty() {
-                    template_specification_item.answer = choice.to_string();
+                    template_specification_item.set_answer(choice.to_string());
                     return;
                 }
 
-                template_specification_item.answer = cleaned_answer;
+                template_specification_item.set_answer(cleaned_answer);
             }
             TemplateSpecificationItemType::MultipleChoice(choices) => {
-                println!("{} (1):", template_specification_item.template_key);
+                println!("❓ {} (1):", template_specification_item.get_template_key());
                 for (index, choice) in choices.iter().enumerate() {
                     println!("  {} {}", index + 1, choice);
                 }
@@ -54,7 +54,7 @@ impl Prompt for CliPrompt {
                     return;
                 }
 
-                template_specification_item.answer = choices[index - 1].clone();
+                template_specification_item.set_answer(choices[index - 1].clone());
             }
         }
     }

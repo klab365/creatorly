@@ -19,18 +19,40 @@ impl Default for TemplateSpecification {
 /// A template specification item. It contains the template key, the type and the answer.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecificationItem {
-    pub item: TemplateSpecificationItemType,
-    pub template_key: String,
-    pub answer: String,
+    item: TemplateSpecificationItemType,
+    template_key: String,
+    answer: String,
 }
 
 impl TemplateSpecificationItem {
+    pub const PREFIX: &'static str = "creatorly";
+
     pub fn new(template_key: String, item: TemplateSpecificationItemType) -> Self {
         Self {
             item,
             template_key,
             answer: String::new(),
         }
+    }
+
+    /// Returns the template key.
+    pub fn get_template_key(&self) -> &String {
+        &self.template_key
+    }
+
+    /// Returns the answer.
+    pub fn get_answer(&self) -> &String {
+        &self.answer
+    }
+
+    /// Sets the answer.
+    pub fn set_answer(&mut self, answer: String) {
+        self.answer = answer;
+    }
+
+    /// Returns the item.
+    pub fn get_item(&self) -> &TemplateSpecificationItemType {
+        &self.item
     }
 
     /// Returns the single choice, if the item is a single choice. Otherwise None.

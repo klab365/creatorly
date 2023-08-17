@@ -1,4 +1,4 @@
-use application::create::{file_list::FileList, interfaces::FileListLoader};
+use application::generate::{file_list::FileList, interfaces::FileListLoader};
 use std::{path::PathBuf, process::Command, str::FromStr};
 
 use super::local_file_loader::LocalFileListLoader;
@@ -30,6 +30,7 @@ impl GitFileListLoader {
         let mut git_clone_cmd = Command::new("git");
         git_clone_cmd
             .arg("clone")
+            .arg("--recurse-submodules")
             .arg("--branch")
             .arg(&self.branch_name)
             .arg(git_url)

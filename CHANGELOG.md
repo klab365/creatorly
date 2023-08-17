@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.1.0 - 17.08.2023
+
+### Changed
+
+* Rename `create` command to `generate`
+
 ## 1.0.4 - 14.05.2023
 
 ### Added

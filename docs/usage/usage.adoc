@@ -8,22 +8,23 @@ endif::[]
 
 == Usage
 
-=== Create a new project
+=== Generate a new project from template
 
-For this tool, the file `creatorly.yml` must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs in `creatorly.yml` can be used as a placeholder variable in all files and file paths. Since link:https://shopify.github.io/liquid/[Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website. 
+For this tool, the file `creatorly.yml` must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs inside the key `creatorly` in `creatorly.yml` file can be used as a placeholder variable in all files and file paths. Since link:https://shopify.github.io/liquid/[Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website.
 
 Below is an example of a `creatorly.yml` file:
 
 [source,yml]
 ----
-project_name: "My Template Project"
+creatorly:
+    project_name: "My Template Project"
 ----
 
 Below is an example of a `README.md` file that uses the `project_name` variable from the `creatorly.yml` file:
 
 [source,md]
 ----
-# Documentation {{ project_name }}
+# Documentation {{ creatorly.project_name }}
 ----
 
 This then becomes after this tool is executed:
@@ -39,18 +40,24 @@ A sample project can be found in the folder `assets/example_project`.
 
 ==== Use the CLI
 
-To create a new project, the following command can be executed, if a local template project is used:
+To generate a new project from a template, the following command can be executed:
+
+===== Local template project
 
 [source,bash]
 ----
-    creatorly create local --template-path <template_path> --destination-path <destination_path>
+    creatorly generate local --template-path <template_path> --destination-path <destination_path>
 ----
 
-If a remote template project is used, the following command can be used:
+===== Remote template project (git)
 
 [source,bash]
 ----
-    creatorly create git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
+    creatorly generate git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
 ----
 
-TIP: It's recommend using absolute paths!
+If the git repository has submodules, they will be also cloned. If you want to use a private repository, then you need to make sure that you have access to the repo with the local installation. I implemented it by simply implementing the git commands as used in the command line.
+
+=== Tipps
+
+* It's recommend using absolute paths!

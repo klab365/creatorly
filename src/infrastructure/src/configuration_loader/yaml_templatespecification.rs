@@ -1,4 +1,4 @@
-use application::create::template_specification::{
+use application::generate::template_specification::{
     TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType,
 };
 use indexmap::IndexMap;
@@ -63,12 +63,12 @@ mod tests {
         let template_specification: TemplateSpecification = yaml_template_specification.into();
 
         assert_eq!(template_specification.questions.len(), 2);
-        assert_eq!(template_specification.questions[0].template_key, "project_name");
+        assert_eq!(template_specification.questions[0].get_template_key(), "project_name");
         assert_eq!(
             template_specification.questions[0].get_single_choice().unwrap(),
             "DemoBoilerplate"
         );
-        assert_eq!(template_specification.questions[1].template_key, "project_type");
+        assert_eq!(template_specification.questions[1].get_template_key(), "project_type");
         assert_eq!(
             template_specification.questions[1].get_multiple_choice().unwrap().len(),
             2
@@ -91,12 +91,12 @@ mod tests {
         let template_specification: TemplateSpecification = TemplateSpecification::from(yaml_template_specification);
 
         assert_eq!(template_specification.questions.len(), 2);
-        assert_eq!(template_specification.questions[0].template_key, "project_name");
+        assert_eq!(template_specification.questions[0].get_template_key(), "project_name");
         assert_eq!(
             template_specification.questions[0].get_single_choice().unwrap(),
             "DemoBoilerplate"
         );
-        assert_eq!(template_specification.questions[1].template_key, "project_type");
+        assert_eq!(template_specification.questions[1].get_template_key(), "project_type");
         assert_eq!(
             template_specification.questions[1].get_multiple_choice().unwrap().len(),
             2
