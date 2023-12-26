@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.2.0 - 27.12.2023
+
+* Restructure the project
+    * Split into business functioanlities (generate)
+    * Every business functionality has its own cli structure and will be composed in the main cli with a register function
+* Restructure yml configuration (see example project)
+
 ## 1.1.0 - 17.08.2023
 
 ### Changed

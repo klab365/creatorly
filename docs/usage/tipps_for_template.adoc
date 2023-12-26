@@ -2,7 +2,7 @@
 
 == Exclude text from rendering
 
-If you want to exclude text from rendering, you can use the `{% raw %}blablab{% endraw %}` tag. This is useful for templates that contain a CI pipeline file which s has sombe variables that should not be rendered.
+If you want to exclude text from rendering, you can use the `{% raw %}blablab{% endraw %}` tag. This is useful for templates that contain a CI pipeline file which has some variables that should not be rendered.
 
 === Example
 
