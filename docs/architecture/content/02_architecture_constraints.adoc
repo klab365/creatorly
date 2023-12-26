@@ -1,7 +1,15 @@
 ifndef::imagesdir[:imagesdir: ../.images]
 
 [[section-architecture-constraints]]
-== Architecture Constraints
+== Technical Constraints
 
 * Programming language: Rust
 * Operating system: Linux
+
+[[section-organization-constraints]]
+== Organization Constraints
+
+* Documentation is written in AsciiDoc and stored in the `docs` directory.
+* Usage examples are stored in the `examples` directory.
+
+

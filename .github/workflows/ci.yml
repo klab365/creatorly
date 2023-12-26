@@ -10,8 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  format:
-    name: Rustfmt
+  build_fmt_clippy_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +22,7 @@ jobs:
         with:
           toolchain: stable
           override: true
-          components: rustfmt
+          components: rustfmt, clippy
 
       - name: Run rustfmt
         uses: actions-rs/cargo@v1
@@ -31,63 +30,14 @@ jobs:
           command: fmt
           args: --all -- --check
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --verbose
-
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install stable components
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: clippy
-
       - name: Run clippy
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --verbose --release -- -D warnings
 
-  bench:
-    name: Benchmark
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-
-      - name: Run benchmarks
+      - name: Run tests
         uses: actions-rs/cargo@v1
         with:
-          command: bench
+          command: test
           args: --verbose

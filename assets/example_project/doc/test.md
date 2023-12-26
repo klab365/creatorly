@@ -4,7 +4,7 @@ This project is generated from a template!
 
 ## Empty {{ }}
 
-## Variable doesn't exists {{ creatorly.test }}
+## Variable doesn't exists {{ creatorly.test }} and will be not rendered
 
 ## Exclude some text not be rendered
 

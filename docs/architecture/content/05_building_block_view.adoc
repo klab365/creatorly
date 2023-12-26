@@ -9,11 +9,9 @@ image::whitebox_level01.drawio.svg[alt]
 
 Motivation::
 
-* Seperate the logic from the infrastructure and the user interface
-
+* Seperate to the different business functionalities (generator)
 
 Contained Building Blocks::
 
-* application: Contains the logic of the application
-* infrastructure: Contains the infrastructure of the application
-* cli: Contains the user interface in form of cli of the application
+* generator: Generates the new project from the template
+* templatespecifications: Contains the specifications of the templates

@@ -1,10 +1,24 @@
 [workspace]
-members = ["src/application", "src/infrastructure", "src/cli"]
+resolver = "2"
+members = [
+    "src/cli",
+    "src/common",
+    "src/generator",
+    "src/templatespecification"
+]
 
 [workspace.package]
 authors = ["Burak Kizilkaya <burak.kizilkaya@outlook.com>"]
-version = "1.1.0"
+version = "1.2.0"
 
 [workspace.dependencies]
 log = "0.4"
 tokio = { version = "1.28.0", features = ["full"] }
+async-trait = "0.1.68"
+tempfile = "3.0.4"
+clap = { version = "4.1.8", features = ["derive"] }
+mockall = "0.12.1"
+
+[profile.release]
+opt-level = "z"
+strip = true

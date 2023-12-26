@@ -10,13 +10,13 @@ endif::[]
 
 === Generate a new project from template
 
-For this tool, the file `creatorly.yml` must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs inside the key `creatorly` in `creatorly.yml` file can be used as a placeholder variable in all files and file paths. Since link:https://shopify.github.io/liquid/[Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website.
+For this tool, the `creatorly.yml` file must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs within the key `placeholders` in the `creatorly.yml` file can be used as a placeholder variable in all files and file paths. Each placeholder variable must be enclosed in `{{ creatorly.<placeholder_name> }}` in the files. As link:https://shopify.github.io/liquid/[Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website.
 
 Below is an example of a `creatorly.yml` file:
 
 [source,yml]
 ----
-creatorly:
+placeholders:
     project_name: "My Template Project"
 ----
 

@@ -1,0 +1,7 @@
+placeholders:
+  project_name: "DemoBoilerplate"
+  description: "Demo Boilerplate"
+  author_name: 'Max Muster'
+  author_email: 'max.muster@example.com'
+  license: ["MIT", "BSD"]
+

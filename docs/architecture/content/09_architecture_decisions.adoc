@@ -3,7 +3,22 @@ ifndef::imagesdir[:imagesdir: ../.images]
 [[section-design-decisions]]
 == Architecture Decisions
 
-=== Programming Language
+=== ADR 001: Programming Language
+
+Date: 2023-12-26
+
+### Status
+
+Accepted
+
+### Context
+
+Choosing the programming language for the project.
+
+### Decision
 
 The project is written with Rust. Rust is choosen, because for learning purpose.
 
+### Consequences
+
+Rust is a new language for me. I have to learn it.
