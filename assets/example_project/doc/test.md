@@ -2,9 +2,9 @@
 
 This project is generated from a template!
 
+{% raw -%}
 ## Empty {{ }}
-
-## Variable doesn't exists {{ creatorly.test }} and will be not rendered
+{%- endraw %}
 
 ## Exclude some text not be rendered
 

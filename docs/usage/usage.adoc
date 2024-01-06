@@ -56,6 +56,15 @@ To generate a new project from a template, the following command can be executed
     creatorly generate git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
 ----
 
+==== Use with dry-run
+
+If you want to see what the result of the generation would be, you can use the `--dry-run` flag. This will not create the project, but only show the result of the generation.
+
+[source, bash]
+----
+    creatorly generate --dry-run local --template-path <template_path> --destination-path <destination_path>
+----
+
 If the git repository has submodules, they will be also cloned. If you want to use a private repository, then you need to make sure that you have access to the repo with the local installation. I implemented it by simply implementing the git commands as used in the command line.
 
 === Tipps
