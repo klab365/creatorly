@@ -1,10 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
-    "src/cli",
-    "src/common",
-    "src/generator",
-    "src/templatespecification"
+    "src/cmd/cli",
+    "src/modules/*",
 ]
 
 [workspace.package]
@@ -13,7 +11,7 @@ version = "1.2.0"
 
 [workspace.dependencies]
 log = "0.4"
-tokio = { version = "1.28.0", features = ["full"] }
+tokio = { version = "1.28.0", features = ["rt", "rt-multi-thread", "fs", "io-util", "macros", "process"] }
 async-trait = "0.1.68"
 tempfile = "3.0.4"
 clap = { version = "4.1.8", features = ["derive"] }
@@ -22,3 +20,4 @@ mockall = "0.12.1"
 [profile.release]
 opt-level = "z"
 strip = true
+lto = true

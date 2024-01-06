@@ -7,7 +7,7 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'creatorly'",
+      "name": "Debug generate local",
       "cargo": {
         "args": [
           "build",
@@ -26,6 +26,55 @@
         "${workspaceFolder}/assets/example_project",
         "-d",
         "${workspaceFolder}/target/new_proj"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug generate remote",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=creatorly",
+          "--package=creatorly"
+        ],
+        "filter": {
+          "name": "creatorly",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "generate",
+        "git",
+        "-r",
+        "https://kizilkaya-lab@dev.azure.com/kizilkaya-lab/Demo/_git/Demo",
+        "-b",
+        "main",
+        "-d",
+        "${workspaceFolder}/target/new_proj"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug create template",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=creatorly",
+          "--package=creatorly"
+        ],
+        "filter": {
+          "name": "creatorly",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "create",
+        "template",
+        "${workspaceFolder}/assets/example_project/doc/",
       ],
       "cwd": "${workspaceFolder}"
     },

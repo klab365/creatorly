@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.3.0 - 06.01.2024
+
+* Add `create template` command to create a template from a directory
+* Add `dry-run` option to generate command. If this option is set, then the files will not be written to the file system. This is useful for debugging the template.
+
+### Changed
+
+* I render the hole content of a file and not line by line. This is more efficient and it is possible to place `{% raw %}` and `{% endraw %}` in the beginning and end of a file.
+
 ## 1.2.0 - 27.12.2023
 
 * Restructure the project
