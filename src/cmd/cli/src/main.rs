@@ -1,20 +1,8 @@
 #![allow(dead_code)]
 #![warn(unused_extern_crates)]
 
-/// This is the main entry point of the Creatorly CLI application.
-/// It sets up the logger, handles the command line interface, and executes the specified command.
-/// The CLI application uses the clap crate for command line argument parsing.
-/// The available commands are defined as implementations of the `ICommand` trait.
-/// The `handle_cli` function retrieves the list of commands, creates the CLI object, and matches the subcommand.
-/// It then executes the corresponding command and logs any errors that occur.
-/// The `get_commands` function returns a vector of command objects, currently only containing the `GenerateCliCommand`.
-/// The `get_cli` function constructs the CLI object by augmenting the default clap::Command with arguments from the `Cli` struct
-/// and registering each command from the list of commands.
-/// The `main` function sets up the logger and calls the `handle_cli` function to start the CLI application.
-/// It is marked as `async` to allow for asynchronous execution using the `tokio` runtime.
-/// The `tokio::main` attribute is used to run the `main` function.
+use check::cli::CheckCliCommand;
 use clap::{command, Args};
-
 use common::{cli::interface::ICommand, infrastructure::logger::setup_logger};
 use create::cli::CreateCommand;
 use generator::cli::generate::GenerateCliCommand;
@@ -26,6 +14,7 @@ async fn main() {
     let mut app = CliApp::new();
     app.register_command(Box::new(GenerateCliCommand {}));
     app.register_command(Box::new(CreateCommand {}));
+    app.register_command(Box::new(CheckCliCommand {}));
     app.parse().await;
 }
 

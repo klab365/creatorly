@@ -1,5 +1,5 @@
 [package]
-name = "create"
+name = "check"
 edition = "2021"
 authors.workspace = true
 version.workspace = true
@@ -13,11 +13,11 @@ log = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true}
 clap = { workspace = true }
-regex = "1.10.2"
 
 [dev-dependencies]
 mockall = { workspace = true }
-tempdir = { workspace = true }
+tempdir ={ workspace = true }
 
 [features]
 cli = []
+
