@@ -1,5 +1,5 @@
-#[derive(Debug, Clone, PartialEq)]
 /// The template specification. It contains the questions, which are asked.
+#[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecification {
     /// Represents a list of questions for a template specification.
     pub placeholders: Vec<TemplateSpecificationItem>,
@@ -21,8 +21,8 @@ impl Default for TemplateSpecification {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
 /// Represents an item in the template specification.
+#[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecificationItem {
     pub item: TemplateSpecificationItemType,
     pub template_key: String,

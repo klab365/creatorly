@@ -10,6 +10,7 @@ edition = "2021"
 generator = { path = "../../modules/generator", features = ["cli"] }
 create = { path = "../../modules/create", features = ["cli"] }
 common = { path = "../../modules/common", features = ["cli"] }
+check = { path = "../../modules/check", features = ["cli"] }
 clap = { workspace = true }
 log = { workspace = true }
 tokio = { workspace = true }

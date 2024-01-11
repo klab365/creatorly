@@ -13,8 +13,6 @@ log = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true}
 clap = { workspace = true }
-futures = "0.3.28"
-liquid = "0.26.4"
 
 [dev-dependencies]
 mockall = { workspace = true }

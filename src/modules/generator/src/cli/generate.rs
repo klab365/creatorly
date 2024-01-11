@@ -3,13 +3,10 @@ use common::core::errors::{Error, Result};
 use common::{cli::interface::ICommand, infrastructure::file_system::FileSystem};
 use std::path::PathBuf;
 use std::sync::Arc;
+use templatespecification::core::template_engine::TemplateEngine;
 use templatespecification::{core::service::TemplateSpecificationService, infrastructure::cli_prompt::CliPrompt};
 
-use crate::core::{
-    service::{GenerateProjectInput, GenerateService},
-    template_engine::TemplateEngine,
-};
-use crate::infrastructure::liquid_template_renderer::LiquidTemplateRenderer;
+use crate::core::service::{GenerateProjectInput, GenerateService};
 
 /// Represents a command for generating a project from a template.
 pub struct GenerateCliCommand {}
@@ -26,15 +23,12 @@ impl ICommand for GenerateCliCommand {
 
         let file_system = Arc::new(FileSystem {});
         let prompt = Arc::new(CliPrompt {});
-        let liquid_template_renderer = Arc::new(LiquidTemplateRenderer {});
-        let template_engine = Arc::new(TemplateEngine::new(liquid_template_renderer, file_system));
+        let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(file_system));
 
-        let dry_run = generate_args.dry_run;
         let sub_command = generate_args.command;
         match sub_command {
             GenerateSubCommands::Local(local_create) => {
                 let input = GenerateProjectInput {
-                    dry_run,
                     input_path: Some(local_create.template_path),
                     destination_path: local_create.destination_path,
                 };
@@ -44,7 +38,6 @@ impl ICommand for GenerateCliCommand {
             }
             GenerateSubCommands::Git(git_create) => {
                 let input: GenerateProjectInput = GenerateProjectInput {
-                    dry_run,
                     input_path: git_create.input_path,
                     destination_path: git_create.destination_path,
                 };
@@ -72,18 +65,13 @@ impl ICommand for GenerateCliCommand {
 
 #[derive(Args)]
 struct GenerateArgs {
-    /// If set, the command will not create any files
-    #[arg(short, long)]
-    dry_run: bool,
-
     #[command(subcommand)]
     command: GenerateSubCommands,
 }
 
 #[derive(Subcommand)]
 enum GenerateSubCommands {
-    /// Check if the template is valid
-    /// Create a new project from a template
+    /// Create a new project from a local template
     Local(GenerateFromLocal),
 
     /// Create a new project from a git repository

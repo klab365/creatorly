@@ -59,6 +59,27 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Debug check ",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=creatorly",
+          "--package=creatorly"
+        ],
+        "filter": {
+          "name": "creatorly",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "check",
+        "${workspaceFolder}/assets/example_project",
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Debug create template",
       "cargo": {
         "args": [

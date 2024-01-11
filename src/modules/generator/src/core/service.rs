@@ -1,17 +1,15 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use super::template_engine::TemplateEngine;
-use crate::core::template_engine::RenderPushArgument;
 use common::core::errors::Result;
-use log::{info, warn};
+use log::info;
 use templatespecification::core::interfaces::Prompt;
 use templatespecification::core::service::TemplateSpecificationService;
+use templatespecification::core::template_engine::{RenderPushArgument, TemplateEngine};
 use templatespecification::core::template_specification::TemplateSpecification;
 
 /// Represents the input parameters for generating a project.
 pub struct GenerateProjectInput {
-    pub dry_run: bool,
     /// The path of the input file or directory.
     pub input_path: Option<PathBuf>,
     /// The path where the generated project will be saved.
@@ -40,10 +38,6 @@ impl GenerateService {
 
     /// Create a project from a given template
     pub async fn generate_project(&self, input: GenerateProjectInput) -> Result<()> {
-        if input.dry_run {
-            warn!("🚀 dry run");
-        }
-
         let input_path = input.input_path;
 
         let mut template_configuration = self
@@ -62,17 +56,10 @@ impl GenerateService {
         // render files and push it to the destination folder
         info!("🚀 render files and push it to the destination folder");
         let args = RenderPushArgument {
-            input_root_path: template_configuration.clone().file_list.root_path,
             destination_path: input.destination_path,
-            file_list: template_configuration.file_list,
-            template_specification: template_configuration.template_specification,
-            dry_run: input.dry_run,
+            template_configuration,
         };
         self.template_engine.render_and_push(args).await?;
-
-        if input.dry_run {
-            info!("🎉 project created!");
-        }
 
         Ok(())
     }

@@ -1,7 +1,7 @@
 use crate::core::interfaces::TemplateRenderer;
+use crate::core::template_specification::TemplateSpecification;
 use common::core::errors::{Error, Result};
 use liquid::model::Value;
-use templatespecification::core::template_specification::TemplateSpecification;
 
 pub struct LiquidTemplateRenderer {}
 
@@ -40,9 +40,7 @@ fn map_to_liquid_object(value: &TemplateSpecification) -> liquid::Object {
 
 #[cfg(test)]
 mod tests {
-    use templatespecification::core::template_specification::{
-        TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType,
-    };
+    use crate::core::template_specification::{TemplateSpecificationItem, TemplateSpecificationItemType};
 
     use super::*;
 

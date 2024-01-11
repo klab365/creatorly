@@ -52,3 +52,11 @@ pub trait Prompt {
     /// get the default answer of the placeholder
     fn get_default_answer(&self, placeholder: &str) -> Result<TemplateSpecificationItem>;
 }
+
+#[cfg_attr(test, automock)]
+/// This interface is used to render the input with the given template specification
+/// The input can be the content of a file or a path to a file
+pub trait TemplateRenderer: Send + Sync {
+    /// render the input with the given template specification
+    fn render(&self, input: &str, config: &TemplateSpecification) -> Result<String>;
+}

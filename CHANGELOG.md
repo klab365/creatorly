@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.4.0 - 11.01.2024
+
+### Added
+
+* Move `check` command to a seperate crate 
+
+### Fixed
+
+* Fix install.sh issue because of the move of the project to a new repository
+
 ## 1.3.0 - 06.01.2024
 
 * Add `create template` command to create a template from a directory
