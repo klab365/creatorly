@@ -1,13 +1,29 @@
-ifndef::imagesdir[:imagesdir: ../.images]
-
 [[section-introduction-and-goals]]
 == Introduction and Goals
 
 Creatorly is a application, which makes the creation of projects easier. The application reads from a template project and creates a project from it. Before it creates the new project, it will do some manipulations on the files. The manipulations are replacing specific places with defined tokens.
 
+=== Requirements Overview
+
+.What is creatorly?
+
+The main purpose of creatorly is to create projects from a template project. The template project is a project, which contains all files and folders, which should be in the new project. The template project can contain tokens, which will be replaced with the values of the user.
+
+.Main features
+
+* Generate a project from a template project
+* Create a template configuration file
+* Check if the template configuration file is valid
+
 === Quality Goals
 
-n.a.
+[cols="0,1,3" options="header"]
+.Quality Goals
+|===
+| Nr. | Quality                        | Motivation
+| 1   | Attractiveness                 | The cli should be easy to use and should have a good user experience.
+| 2   | Testability                    | The architecture should allow easy testing of all main building blocks.
+|===
 
 === Stakeholders
 

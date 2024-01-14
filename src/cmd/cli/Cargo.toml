@@ -7,7 +7,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-generator = { path = "../../modules/generator", features = ["cli"] }
+generate = { path = "../../modules/generate", features = ["cli"] }
 create = { path = "../../modules/create", features = ["cli"] }
 common = { path = "../../modules/common", features = ["cli"] }
 check = { path = "../../modules/check", features = ["cli"] }

@@ -1,0 +1,16 @@
+[[section_installation]]
+== Installation
+
+creatorly should currently run on linux.
+
+To install `creatorly` you can run the following command:
+
+[source,sh]
+----
+
+curl https://raw.githubusercontent.com/BuriKizilkaya/creatorly/main/install.sh | bash
+
+----
+
+This will install `creatorly` to `/usr/local/bin/creatorly`.
+

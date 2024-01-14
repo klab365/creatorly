@@ -1,5 +1,3 @@
-ifndef::imagesdir[:imagesdir: ../.images]
-
 [[section-system-scope-and-context]]
 == System Scope and Context
 
@@ -8,7 +6,7 @@ image::context.drawio.svg[alt]
 [options="header",cols="1,2"]
 |===
 |Element|Description
-| Actor | User which use `creatorly` to create new projects.
-| LocalFile System | Local file system which is used to store project files and read the project template files.
+| Actor | User which use `creatorly`.
+| Local File System | Local file system which is used to store project files and read the project template files.
 | Git Repository | Git repository which is used to store project files and read the project template files.
 |===

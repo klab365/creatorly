@@ -5,7 +5,7 @@ use check::cli::CheckCliCommand;
 use clap::{command, Args};
 use common::{cli::interface::ICommand, infrastructure::logger::setup_logger};
 use create::cli::CreateCommand;
-use generator::cli::generate::GenerateCliCommand;
+use generate::cli::generate::GenerateCliCommand;
 
 #[tokio::main]
 async fn main() {

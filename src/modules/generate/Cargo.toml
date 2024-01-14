@@ -1,5 +1,5 @@
 [package]
-name = "generator"
+name = "generate"
 edition = "2021"
 authors.workspace = true
 version.workspace = true

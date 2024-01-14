@@ -5,7 +5,8 @@ use common::core::errors::Result;
 use log::info;
 use templatespecification::core::interfaces::Prompt;
 use templatespecification::core::service::TemplateSpecificationService;
-use templatespecification::core::template_engine::{RenderPushArgument, TemplateEngine};
+use templatespecification::core::template_configuration::TemplateConfiguration;
+use templatespecification::core::template_engine::{CheckTemplateArgs, RenderPushArgument, TemplateEngine};
 use templatespecification::core::template_specification::TemplateSpecification;
 
 /// Represents the input parameters for generating a project.
@@ -40,11 +41,14 @@ impl GenerateService {
     pub async fn generate_project(&self, input: GenerateProjectInput) -> Result<()> {
         let input_path = input.input_path;
 
+        // load template configuration
         let mut template_configuration = self
             .template_specification_service
             .load_template_configuration(input_path.clone())
             .await?;
 
+        // check if the template is valid
+        self.check_template_configuration(&template_configuration).await?;
         info!(
             "found {} files on template project",
             template_configuration.file_list.files.len()
@@ -69,5 +73,18 @@ impl GenerateService {
         for item in &mut template_specification.placeholders {
             self.prompt.get_answer(item)
         }
+    }
+
+    async fn check_template_configuration(&self, templatespecification: &TemplateConfiguration) -> Result<()> {
+        info!("🔎 check if the template is valid");
+        let check_template_args = CheckTemplateArgs {
+            template_configuration: templatespecification.clone(),
+        };
+        let res_check_template = self.template_engine.check_template(&check_template_args).await?;
+        if !res_check_template.is_valid() {
+            return Err(res_check_template.into());
+        }
+        info!("✅ template is valid");
+        Ok(())
     }
 }
