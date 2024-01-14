@@ -1,8 +1,4 @@
-ifndef::imagesdir[:imagesdir: ../.images]
-
 [[section-deployment-view]]
-
-
 == Deployment View
 
 n.a.

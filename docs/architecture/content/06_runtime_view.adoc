@@ -1,6 +1,3 @@
-ifndef::imagesdir[:imagesdir: ../.images]
-
-[[section-runtime-view]]
 == Runtime View
 
 n.a.

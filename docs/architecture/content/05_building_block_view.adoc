@@ -1,17 +1,35 @@
-ifndef::imagesdir[:imagesdir: ../.images]
-
 [[section-building-block-view]]
 == Building Block View
 
-=== Whitebox Overall System
+=== Level 1
 
 image::whitebox_level01.drawio.svg[alt]
 
-Motivation::
+==== Motivation
 
-* Seperate to the different business functionalities (generator)
+We used functional decomposition to break down the system into smaller parts.
 
-Contained Building Blocks::
+* Stereotype "cli" means that the component contain cli functioanlity.
+* The main entry point is not visible in the diagram for simplicity.
 
-* generator: Generates the new project from the template
-* templatespecifications: Contains the specifications of the templates
+==== Contained Building Blocks
+
+[cols="1,1", options="header"]
+|===
+| Building block | Description
+| generate
+| Generates the new project from the template
+
+| check
+| Checks the template for errors
+
+| create
+| Creates the template specification file
+
+| templatespecification
+| Contains the specifications of the templates
+|===
+
+=== Level 2 - Templatespecification
+
+tbd.

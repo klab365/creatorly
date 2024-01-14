@@ -260,7 +260,7 @@ dependencies = [
  "clap",
  "common",
  "create",
- "generator",
+ "generate",
  "log",
  "tokio",
 ]
@@ -436,7 +436,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "generator"
+name = "generate"
 version = "1.4.0"
 dependencies = [
  "async-trait",

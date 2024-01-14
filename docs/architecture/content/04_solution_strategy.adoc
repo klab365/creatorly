@@ -1,6 +1,13 @@
-ifndef::imagesdir[:imagesdir: ../.images]
-
 [[section-solution-strategy]]
 == Solution Strategy
 
-n.a.
+[cols="1,2,2,1", options="header"]
+|===
+| Goal | Scenario | Solution approach | Link to Details
+
+| Modularity
+| Each new cli main action (such as generate) should be in a separate crate.
+| Each actio has his cli functionality implemented. The main cli module will register the seperates crates.
+|
+
+|===

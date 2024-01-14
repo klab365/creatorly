@@ -1,3 +1,7 @@
 {
-    "sarif-viewer.connectToGithubCodeScanning": "off"
+    "asciidoc.preview.useEditorStyle": false,
+    "asciidoc.extensions.enableKroki": true,
+    "asciidoc.preview.asciidoctorAttributes": {
+        "imagesdir": "${workspaceFolder}/docs/.images",
+    },
 }

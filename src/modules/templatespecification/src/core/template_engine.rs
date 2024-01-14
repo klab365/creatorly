@@ -39,6 +39,12 @@ impl CheckTemplateResult {
     }
 }
 
+impl From<CheckTemplateResult> for Error {
+    fn from(res: CheckTemplateResult) -> Self {
+        Error::new(res.issues.join("\n"))
+    }
+}
+
 #[derive(Clone)]
 pub struct TemplateEngine {
     template_renderer: Arc<dyn TemplateRenderer>,
