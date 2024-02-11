@@ -156,7 +156,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "check"
-version = "1.4.0"
+version = "1.4.2"
 dependencies = [
  "async-trait",
  "clap",
@@ -215,7 +215,7 @@ checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
 name = "common"
-version = "1.4.0"
+version = "1.4.2"
 dependencies = [
  "async-trait",
  "clap",
@@ -237,7 +237,7 @@ dependencies = [
 
 [[package]]
 name = "create"
-version = "1.4.0"
+version = "1.4.2"
 dependencies = [
  "async-trait",
  "clap",
@@ -251,7 +251,7 @@ dependencies = [
 
 [[package]]
 name = "creatorly"
-version = "1.4.0"
+version = "1.4.2"
 dependencies = [
  "check",
  "clap",
@@ -433,7 +433,7 @@ dependencies = [
 
 [[package]]
 name = "generate"
-version = "1.4.0"
+version = "1.4.2"
 dependencies = [
  "async-trait",
  "clap",
@@ -1068,7 +1068,7 @@ dependencies = [
 
 [[package]]
 name = "templatespecification"
-version = "1.4.0"
+version = "1.4.2"
 dependencies = [
  "async-trait",
  "common",
