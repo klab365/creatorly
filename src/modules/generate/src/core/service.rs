@@ -2,8 +2,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use common::core::errors::Result;
-use log::info;
-use templatespecification::core::interfaces::Prompt;
+use common::core::user_interaction_interface::UserInteractionInterface;
 use templatespecification::core::service::TemplateSpecificationService;
 use templatespecification::core::template_configuration::TemplateConfiguration;
 use templatespecification::core::template_engine::{CheckTemplateArgs, RenderPushArgument, TemplateEngine};
@@ -20,20 +19,20 @@ pub struct GenerateProjectInput {
 /// Structure for the create service
 pub struct GenerateService {
     template_specification_service: Arc<TemplateSpecificationService>,
-    prompt: Arc<dyn Prompt + Send + Sync>,
     template_engine: Arc<TemplateEngine>,
+    user_interaction_interface: Arc<dyn UserInteractionInterface>,
 }
 
 impl GenerateService {
     pub fn new(
         template_specification_service: Arc<TemplateSpecificationService>,
-        prompt: Arc<dyn Prompt + Send + Sync>,
         template_engine: Arc<TemplateEngine>,
+        user_interaction_interface: Arc<dyn UserInteractionInterface>,
     ) -> Self {
         Self {
             template_specification_service,
-            prompt,
             template_engine,
+            user_interaction_interface,
         }
     }
 
@@ -49,16 +48,20 @@ impl GenerateService {
 
         // check if the template is valid
         self.check_template_configuration(&template_configuration).await?;
-        info!(
+        let msg = format!(
             "found {} files on template project",
             template_configuration.file_list.files.len()
         );
+        self.user_interaction_interface.print(&msg).await;
 
         // parse answer for question
-        self.parse_answer_for_questions(&mut template_configuration.template_specification);
+        self.parse_answer_for_questions(&mut template_configuration.template_specification)
+            .await?;
 
         // render files and push it to the destination folder
-        info!("🚀 render files and push it to the destination folder");
+        self.user_interaction_interface
+            .print("🚀 render files and push it to the destination folder")
+            .await;
         let args = RenderPushArgument {
             destination_path: input.destination_path,
             template_configuration,
@@ -68,15 +71,22 @@ impl GenerateService {
         Ok(())
     }
 
-    fn parse_answer_for_questions(&self, template_specification: &mut TemplateSpecification) {
-        info!("📝 parse answer for questions");
-        for item in &mut template_specification.placeholders {
-            self.prompt.get_answer(item)
-        }
+    async fn parse_answer_for_questions(&self, template_specification: &mut TemplateSpecification) -> Result<()> {
+        self.user_interaction_interface
+            .print("📝 parse answer for questions")
+            .await;
+
+        self.template_specification_service
+            .get_answers(template_specification)
+            .await?;
+
+        Ok(())
     }
 
     async fn check_template_configuration(&self, templatespecification: &TemplateConfiguration) -> Result<()> {
-        info!("🔎 check if the template is valid");
+        self.user_interaction_interface
+            .print("🔎 check if the template is valid")
+            .await;
         let check_template_args = CheckTemplateArgs {
             template_configuration: templatespecification.clone(),
         };
@@ -84,7 +94,7 @@ impl GenerateService {
         if !res_check_template.is_valid() {
             return Err(res_check_template.into());
         }
-        info!("✅ template is valid");
+        self.user_interaction_interface.print_success("template is valid").await;
         Ok(())
     }
 }

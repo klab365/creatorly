@@ -1,10 +1,12 @@
 use clap::{Args, Command, FromArgMatches, Subcommand};
+
+use common::cli::cli_user_interaction_interface::CliUserInteractionInterface;
 use common::core::errors::{Error, Result};
 use common::{cli::interface::ICommand, infrastructure::file_system::FileSystem};
 use std::path::PathBuf;
 use std::sync::Arc;
+use templatespecification::core::service::TemplateSpecificationService;
 use templatespecification::core::template_engine::TemplateEngine;
-use templatespecification::{core::service::TemplateSpecificationService, infrastructure::cli_prompt::CliPrompt};
 
 use crate::core::service::{GenerateProjectInput, GenerateService};
 
@@ -22,8 +24,11 @@ impl ICommand for GenerateCliCommand {
             .map_err(|e| Error::new(format!("issue to parse generate args: {}", e)))?;
 
         let file_system = Arc::new(FileSystem {});
-        let prompt = Arc::new(CliPrompt {});
-        let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(file_system));
+        let cli_interface = Arc::new(CliUserInteractionInterface {});
+        let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(
+            file_system,
+            cli_interface.clone(),
+        ));
 
         let sub_command = generate_args.command;
         match sub_command {
@@ -32,8 +37,11 @@ impl ICommand for GenerateCliCommand {
                     input_path: Some(local_create.template_path),
                     destination_path: local_create.destination_path,
                 };
-                let template_specification_service = Arc::new(TemplateSpecificationService::with_local_file_loader());
-                let service = GenerateService::new(template_specification_service, prompt, template_engine);
+                let template_specification_service = Arc::new(TemplateSpecificationService::with_local_file_loader(
+                    cli_interface.clone(),
+                ));
+                let service =
+                    GenerateService::new(template_specification_service, template_engine, cli_interface.clone());
                 service.generate_project(input).await?;
             }
             GenerateSubCommands::Git(git_create) => {
@@ -42,10 +50,12 @@ impl ICommand for GenerateCliCommand {
                     destination_path: git_create.destination_path,
                 };
                 let template_specification_service = Arc::new(TemplateSpecificationService::with_git_file_loader(
+                    cli_interface.clone(),
                     git_create.remote_path,
                     git_create.branch,
                 ));
-                let service = GenerateService::new(template_specification_service, prompt, template_engine);
+                let service =
+                    GenerateService::new(template_specification_service, template_engine, cli_interface.clone());
                 service.generate_project(input).await?;
             }
         }

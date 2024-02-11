@@ -2,9 +2,10 @@ use std::{path::PathBuf, sync::Arc};
 
 use clap::{Args, Command, FromArgMatches, Subcommand};
 use common::{
-    cli::interface::ICommand, core::errors::Error, core::errors::Result, infrastructure::file_system::FileSystem,
+    cli::cli_user_interaction_interface::CliUserInteractionInterface, cli::interface::ICommand, core::errors::Error,
+    core::errors::Result, infrastructure::file_system::FileSystem,
 };
-use templatespecification::{core::service::TemplateSpecificationService, infrastructure::cli_prompt::CliPrompt};
+use templatespecification::core::service::TemplateSpecificationService;
 
 use crate::service::{CreateTemplateArgs, CreateTemplateSpecificationService};
 
@@ -56,9 +57,11 @@ impl ICommand for CreateCommand {
 
 async fn handle_create_template(template: CreateTemplateSpecificationArgs) -> Result<()> {
     let file_system = Arc::new(FileSystem::default());
-    let prompt = Arc::new(CliPrompt {});
-    let templatespecification_service = Arc::new(TemplateSpecificationService::with_local_file_loader());
-    let create_service = CreateTemplateSpecificationService::new(templatespecification_service, prompt, file_system);
+    let interface = Arc::new(CliUserInteractionInterface {});
+    let templatespecification_service =
+        Arc::new(TemplateSpecificationService::with_local_file_loader(interface.clone()));
+    let create_service =
+        CreateTemplateSpecificationService::new(templatespecification_service, file_system, interface.clone());
 
     let args = CreateTemplateArgs {
         entry_dir: template.entry_dir.clone(),

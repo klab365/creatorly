@@ -9,7 +9,6 @@ version.workspace = true
 [dependencies]
 common = { path = "../common", features = ["cli"] }
 templatespecification = { path = "../templatespecification" }
-log = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true}
 clap = { workspace = true }

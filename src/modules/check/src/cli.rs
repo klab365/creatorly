@@ -3,7 +3,9 @@ use std::sync::Arc;
 
 use crate::logic::{CheckService, CheckServiceArgs};
 use clap::{Args, Command, FromArgMatches};
+use common::cli::cli_user_interaction_interface::CliUserInteractionInterface;
 use common::core::errors::{Error, Result};
+use common::core::user_interaction_interface::UserInteractionInterface;
 use common::{cli::interface::ICommand, infrastructure::file_system::FileSystem};
 use templatespecification::core::{service::TemplateSpecificationService, template_engine::TemplateEngine};
 
@@ -26,9 +28,15 @@ impl ICommand for CheckCliCommand {
         let check_args = CheckCliArgs::from_arg_matches(args)
             .map_err(|e| Error::new(format!("issue to parse check args: {}", e)))?;
 
+        let user_interaction_interface = Arc::new(CliUserInteractionInterface {});
         let file_system = Arc::new(FileSystem::default());
-        let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(file_system));
-        let template_specification_service = Arc::new(TemplateSpecificationService::with_local_file_loader());
+        let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(
+            file_system,
+            user_interaction_interface.clone(),
+        ));
+        let template_specification_service = Arc::new(TemplateSpecificationService::with_local_file_loader(
+            user_interaction_interface.clone(),
+        ));
         let service = CheckService::new(template_specification_service, template_engine);
 
         let args = CheckServiceArgs {
@@ -39,16 +47,21 @@ impl ICommand for CheckCliCommand {
         match res {
             Ok(res) => {
                 if !res.has_issues() {
-                    log::info!("Template is valid");
+                    user_interaction_interface.print_success("Template is valid").await;
                 } else {
-                    log::error!("Template is not valid with this messages:");
+                    user_interaction_interface
+                        .print_error("Template is not valid with this messages:")
+                        .await;
                     for issue in res.issues {
-                        println!("{}\n", issue);
+                        let msg = format!("{}\n", issue);
+                        user_interaction_interface.print(&msg).await;
                     }
                 }
             }
-            Err(err) => {
-                log::error!("Error: {}", err);
+            Err(_) => {
+                user_interaction_interface
+                    .print_error("An error occurred while checking the template")
+                    .await;
             }
         }
 
