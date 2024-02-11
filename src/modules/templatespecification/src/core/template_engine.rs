@@ -4,8 +4,8 @@ use crate::infrastructure::liquid_template_renderer::LiquidTemplateRenderer;
 use ::futures::future::join_all;
 use common::core::errors::Error;
 use common::core::interfaces::FileSystemInterface;
+use common::core::user_interaction_interface::UserInteractionInterface;
 use common::core::{errors::Result, file::File};
-use log::info;
 use std::{path::PathBuf, sync::Arc};
 
 /// Struct for the function of the template engine
@@ -49,20 +49,29 @@ impl From<CheckTemplateResult> for Error {
 pub struct TemplateEngine {
     template_renderer: Arc<dyn TemplateRenderer>,
     file_system: Arc<dyn FileSystemInterface>,
+    user_interface: Arc<dyn UserInteractionInterface>,
 }
 
 impl TemplateEngine {
     /// create a new instance of the template engine
-    pub fn new(template_renderer: Arc<dyn TemplateRenderer>, file_system: Arc<dyn FileSystemInterface>) -> Self {
+    pub fn new(
+        template_renderer: Arc<dyn TemplateRenderer>,
+        file_system: Arc<dyn FileSystemInterface>,
+        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+    ) -> Self {
         Self {
             template_renderer,
             file_system,
+            user_interface: user_interaction_interface,
         }
     }
 
-    pub fn new_with_liquid_template_renderer(file_system: Arc<dyn FileSystemInterface>) -> Self {
+    pub fn new_with_liquid_template_renderer(
+        file_system: Arc<dyn FileSystemInterface>,
+        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+    ) -> Self {
         let template_renderer = Arc::new(LiquidTemplateRenderer {});
-        Self::new(template_renderer, file_system)
+        Self::new(template_renderer, file_system, user_interaction_interface)
     }
 
     /// render files and push it directly to the destination path (async with multiple threads - one thread per file)
@@ -83,7 +92,9 @@ impl TemplateEngine {
         }
 
         join_all(handles).await;
-        info!("Files rendered in {}ms", now.elapsed().as_millis());
+        self.user_interface
+            .print(format!("Files rendered in {}ms", now.elapsed().as_millis()).as_str())
+            .await;
         Ok(())
     }
 
@@ -157,7 +168,9 @@ impl TemplateEngine {
         let rendered_file_name = match renderd_file_name_result {
             Ok(renderd_file_name) => File::from(renderd_file_name),
             Err(error) => {
-                log::error!("While rendering path {}: {}", file_name, error);
+                self.user_interface
+                    .print_error(format!("While rendering path {}: {}", file_name, error).as_str())
+                    .await;
                 file_name.clone()
             }
         };
@@ -184,10 +197,9 @@ impl TemplateEngine {
         let rendered_content = match output {
             Ok(rendered_content) => rendered_content,
             Err(error) => {
-                log::error!(
-                    "While rendering content of path {} was not success, therefore the previous content will be present: {}",
-                    file_name, error
-                );
+                self.user_interface
+                    .print_error(format!("While rendering content of path {}: {}", file_name, error).as_str())
+                    .await;
                 content.clone()
             }
         };

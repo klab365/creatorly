@@ -3,14 +3,15 @@
 
 use check::cli::CheckCliCommand;
 use clap::{command, Args};
-use common::{cli::interface::ICommand, infrastructure::logger::setup_logger};
+use common::{
+    cli::{cli_user_interaction_interface::CliUserInteractionInterface, interface::ICommand},
+    core::user_interaction_interface::UserInteractionInterface,
+};
 use create::cli::CreateCommand;
 use generate::cli::generate::GenerateCliCommand;
 
 #[tokio::main]
 async fn main() {
-    setup_logger();
-
     let mut app = CliApp::new();
     app.register_command(Box::new(GenerateCliCommand {}));
     app.register_command(Box::new(CreateCommand {}));
@@ -81,7 +82,8 @@ impl CliApp {
                     .await;
 
                 if let Err(err) = res {
-                    log::error!("{}", err)
+                    let user_interaction_interface = CliUserInteractionInterface {};
+                    user_interaction_interface.print_error(err.to_string().as_str()).await;
                 }
             }
         }

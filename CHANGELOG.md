@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.4.1 - 11.02.2024
+
+* Add a cli print interface to better print messages to console
+* Symlink follow works now with creatorly
+
 ## 1.4.0 - 11.01.2024
 
 ### Added

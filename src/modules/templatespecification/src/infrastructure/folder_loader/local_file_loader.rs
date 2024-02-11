@@ -28,7 +28,7 @@ impl FileListLoader for LocalFileListLoader {
             root_path: path.clone(),
             files: vec![],
         };
-        for entry in WalkDir::new(path).into_iter().filter_map(|e| e.ok()) {
+        for entry in WalkDir::new(path).follow_links(true).into_iter().filter_map(|e| e.ok()) {
             if !entry.file_type().is_file() {
                 continue;
             }

@@ -1,6 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use super::template_specification::TemplateSpecificationItem;
 use crate::core::file_list::FileList;
 use crate::core::template_specification::TemplateSpecification;
 use common::core::errors::Result;
@@ -41,16 +40,6 @@ pub trait FileListLoader {
     ///
     /// Returns a `Result` containing the loaded `FileList` if successful, or an error message as a `String` if unsuccessful.
     async fn load(&self, path: Option<PathBuf>) -> Result<FileList>;
-}
-
-#[cfg_attr(test, automock)]
-/// This interface is used to get the answer of the question
-pub trait Prompt {
-    /// get the answer of the questions
-    fn get_answer(&self, template_specification_item: &mut TemplateSpecificationItem);
-
-    /// get the default answer of the placeholder
-    fn get_default_answer(&self, placeholder: &str) -> Result<TemplateSpecificationItem>;
 }
 
 #[cfg_attr(test, automock)]

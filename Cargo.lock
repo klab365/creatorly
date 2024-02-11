@@ -161,7 +161,6 @@ dependencies = [
  "async-trait",
  "clap",
  "common",
- "log",
  "mockall",
  "tempdir",
  "templatespecification",
@@ -220,7 +219,6 @@ version = "1.4.0"
 dependencies = [
  "async-trait",
  "clap",
- "log",
  "mockall",
  "simplelog",
  "tempfile",
@@ -244,7 +242,6 @@ dependencies = [
  "async-trait",
  "clap",
  "common",
- "log",
  "mockall",
  "regex",
  "tempdir",
@@ -261,7 +258,6 @@ dependencies = [
  "common",
  "create",
  "generate",
- "log",
  "tokio",
 ]
 
@@ -442,7 +438,6 @@ dependencies = [
  "async-trait",
  "clap",
  "common",
- "log",
  "mockall",
  "templatespecification",
  "tokio",
@@ -1080,7 +1075,6 @@ dependencies = [
  "futures",
  "indexmap 1.9.3",
  "liquid",
- "log",
  "mockall",
  "serde",
  "serde_yaml",
