@@ -48,24 +48,29 @@ impl ICommand for CheckCliCommand {
             Ok(res) => {
                 if !res.has_issues() {
                     user_interaction_interface.print_success("Template is valid").await;
-                } else {
-                    user_interaction_interface
-                        .print_error("Template is not valid with this messages:")
-                        .await;
-                    for issue in res.issues {
-                        let msg = format!("{}\n", issue);
-                        user_interaction_interface.print(&msg).await;
-                    }
+                    return Ok(());
                 }
+
+                user_interaction_interface
+                    .print_error("Template is not valid with this messages:")
+                    .await;
+
+                for issue in res.issues {
+                    let msg = format!("{}\n", issue);
+                    user_interaction_interface.print(&msg).await;
+                }
+
+                return Err(Error::from("Template is not valid"));
             }
-            Err(_) => {
+
+            Err(e) => {
                 user_interaction_interface
                     .print_error("An error occurred while checking the template")
                     .await;
+
+                return Err(e);
             }
         }
-
-        Ok(())
     }
 
     fn register_cli(&self, cli: clap::Command) -> clap::Command {
