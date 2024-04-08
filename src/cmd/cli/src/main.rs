@@ -5,7 +5,7 @@ use check::cli::CheckCliCommand;
 use clap::{command, Args};
 use common::{
     cli::{cli_user_interaction_interface::CliUserInteractionInterface, interface::ICommand},
-    core::user_interaction_interface::UserInteractionInterface,
+    core::{errors::Result, user_interaction_interface::UserInteractionInterface},
 };
 use create::cli::CreateCommand;
 use generate::cli::generate::GenerateCliCommand;
@@ -16,7 +16,14 @@ async fn main() {
     app.register_command(Box::new(GenerateCliCommand {}));
     app.register_command(Box::new(CreateCommand {}));
     app.register_command(Box::new(CheckCliCommand {}));
-    app.parse().await;
+
+    let res = app.parse().await;
+    match res {
+        Ok(_) => {}
+        Err(_) => {
+            std::process::exit(1);
+        }
+    }
 }
 
 #[derive(Args)]
@@ -46,10 +53,11 @@ impl CliApp {
     }
 
     /// Parses the command line arguments and handles them accordingly.
-    pub async fn parse(&self) {
+    pub async fn parse(&self) -> Result<()> {
         let cli = self.build_cli();
         let matches = cli.get_matches();
-        self.handle_argmatches(&matches).await;
+
+        self.handle_argmatches(&matches).await
     }
 
     /// Builds the command line interface using `clap` crate.
@@ -73,7 +81,7 @@ impl CliApp {
     /// # Arguments
     ///
     /// * `matches` - The matched command line arguments.
-    async fn handle_argmatches(&self, matches: &clap::ArgMatches) {
+    async fn handle_argmatches(&self, matches: &clap::ArgMatches) -> Result<()> {
         for command in self.commands.iter() {
             let subcommad_name = matches.subcommand_name().expect("No subcommand found");
             if command.get_name() == subcommad_name {
@@ -81,11 +89,15 @@ impl CliApp {
                     .execute(matches.subcommand_matches(subcommad_name).unwrap())
                     .await;
 
-                if let Err(err) = res {
+                if let Err(ref err) = res {
                     let user_interaction_interface = CliUserInteractionInterface {};
                     user_interaction_interface.print_error(err.to_string().as_str()).await;
                 }
+
+                return res;
             }
         }
+
+        Ok(())
     }
 }
