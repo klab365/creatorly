@@ -28,3 +28,7 @@ pub trait ICommand: Send + Sync {
     /// Returns the modified command-line interface with the command registered.
     fn register_cli(&self, cli: clap::Command) -> clap::Command;
 }
+
+pub trait IGroupCommands: Send + Sync {
+    fn get_commands(&self) -> Vec<Box<dyn ICommand>>;
+}

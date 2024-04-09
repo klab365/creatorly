@@ -20,6 +20,7 @@
         }
       },
       "args": [
+        "template",
         "generate",
         "local",
         "-t",
@@ -45,6 +46,7 @@
         }
       },
       "args": [
+        "template",
         "generate",
         "git",
         "-r",
@@ -72,6 +74,7 @@
         }
       },
       "args": [
+        "template",
         "check",
         "${workspaceFolder}/assets/example_project",
       ],
@@ -93,6 +96,7 @@
         }
       },
       "args": [
+        "template",
         "create",
         "template",
         "${workspaceFolder}/assets/example_project/doc/",

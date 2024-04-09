@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Move all template commands to the template module
+
 ## 1.4.2 - 11.02.2024
 
 * Bump version of creatorly

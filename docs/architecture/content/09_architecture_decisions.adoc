@@ -5,18 +5,18 @@
 
 Date: 2023-12-26
 
-### Status
+==== Status
 
 Accepted
 
-### Context
+==== Context
 
 Choosing the programming language for the project.
 
-### Decision
+==== Decision
 
 The project is written with Rust. Rust is choosen, because for learning purpose.
 
-### Consequences
+==== Consequences
 
 Rust is a new language for me. I have to learn it.

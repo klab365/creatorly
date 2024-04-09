@@ -37,16 +37,23 @@ To generate a new project from a template, the following command can be executed
 
 [source,bash]
 ----
-    creatorly generate local --template-path <template_path> --destination-path <destination_path>
+    creatorly template generate local --template-path <template_path> --destination-path <destination_path>
 ----
 
 ===== Remote template project (git)
 
 [source,bash]
 ----
-    creatorly generate git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
+    creatorly template generate git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
 ----
-
 
 TIP: If the git repository has submodules, they will be also cloned. If you want to use a private repository, then you need to make sure that you have access to the repo with the local git commands.
 
+== Create Commands
+
+tbd.
+
+
+== Check Commands
+
+tbd.

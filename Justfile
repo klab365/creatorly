@@ -1,3 +1,5 @@
+set quiet
+
 build: ## build the code
 	echo "Building..."
 	cargo build
