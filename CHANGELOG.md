@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Fix Bug if only template is given and no subcommand
+
 ## 1.5.0 - 09.04.2024
 
 * Move all template commands to the template module
