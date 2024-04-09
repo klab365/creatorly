@@ -29,7 +29,9 @@ impl ICommand for TemplateGroupCommands {
     }
 
     fn register_cli(&self, cli: clap::Command) -> clap::Command {
-        let mut template_group = Command::new(self.get_name()).about("template commands");
+        let mut template_group = Command::new(self.get_name())
+            .about("template commands")
+            .arg_required_else_help(true);
 
         for command in self.get_commands().iter() {
             template_group = command.register_cli(template_group);
