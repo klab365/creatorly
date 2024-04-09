@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.5.0 - 09.04.2024
+
 * Move all template commands to the template module
 * New CLI experience with a new crate
 
