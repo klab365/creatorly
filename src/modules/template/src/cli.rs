@@ -3,7 +3,7 @@ use common::cli::functions::handle_subcommand;
 use common::cli::interface::{ICommand, IGroupCommands};
 use common::core::errors::Result;
 
-use crate::{check::cli::CheckCliCommand, create::cli::CreateCommand, generate::cli::generate::GenerateCliCommand};
+use crate::{check::cli::CheckCliCommand, create::cli::CreateCommand, generate::cli::GenerateCliCommand};
 
 pub struct TemplateGroupCommands {}
 

@@ -6,7 +6,7 @@ use common::{cli::interface::ICommand, infrastructure::file_system::FileSystem};
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use crate::generate::core::service::{GenerateProjectInput, GenerateService};
+use crate::generate::service::{GenerateProjectInput, GenerateService};
 use crate::templatespecification::core::service::TemplateSpecificationService;
 use crate::templatespecification::core::template_engine::TemplateEngine;
 

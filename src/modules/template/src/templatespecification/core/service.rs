@@ -21,8 +21,6 @@ pub struct TemplateSpecificationService {
 }
 
 impl TemplateSpecificationService {
-    const DEFAULT_INDEX_MULTIPLE_CHOICE: usize = 1;
-
     pub fn with_local_file_loader(user_interaction_interface: Arc<dyn UserInteractionInterface>) -> Self {
         let folder_loader = Arc::new(LocalFileListLoader::default());
         let configuration_loader = Arc::new(YamlConfigurationLoader::default());
@@ -122,42 +120,19 @@ impl TemplateSpecificationService {
     async fn parse_answer(&self, template_specification_item: &mut TemplateSpecificationItem) -> Result<()> {
         match &template_specification_item.get_item() {
             TemplateSpecificationItemType::SingleChoice(choice) => {
-                let prompt = format!("{} ({})", template_specification_item.get_template_key(), choice);
-                let answer = self.user_interaction_interface.get_input(&prompt).await?;
-                let cleaned_answer = answer
-                    .trim()
-                    .strip_suffix("\r\n")
-                    .or(answer.trim().strip_prefix('\n'))
-                    .unwrap_or(answer.trim())
-                    .to_string();
-
-                if cleaned_answer.is_empty() {
+                let prompt = format!("{}: ", template_specification_item.template_key);
+                let answer = self.user_interaction_interface.get_input(&prompt, choice).await?;
+                if answer.is_empty() {
                     template_specification_item.set_answer(choice.to_string());
                     return Ok(());
                 }
 
-                template_specification_item.set_answer(cleaned_answer);
+                template_specification_item.set_answer(answer);
             }
             TemplateSpecificationItemType::MultipleChoice(choices) => {
-                let mut prompt = format!("{} (", template_specification_item.get_template_key());
-                for (index, choice) in choices.iter().enumerate() {
-                    prompt.push_str(&format!("{}: {} ", index + 1, choice));
-                }
-                prompt.push(')');
-
-                let answer = self.user_interaction_interface.get_input(&prompt).await?;
-                let index = answer
-                    .trim()
-                    .parse::<usize>()
-                    .unwrap_or(TemplateSpecificationService::DEFAULT_INDEX_MULTIPLE_CHOICE);
-
-                if index - 1 > choices.len() {
-                    self.user_interaction_interface.print_error("index doesn't exist").await;
-
-                    return Err(Error::new("index doesn't exist".into()));
-                }
-
-                template_specification_item.set_answer(choices[index - 1].clone());
+                let prompt = format!("{}: ", template_specification_item.template_key);
+                let answer = self.user_interaction_interface.get_selection(&prompt, choices).await?;
+                template_specification_item.set_answer(answer);
             }
         }
 
@@ -168,7 +143,7 @@ impl TemplateSpecificationService {
     pub async fn get_default_answer(&self, placeholder: &str) -> Result<TemplateSpecificationItem> {
         let answer = self
             .user_interaction_interface
-            .get_input(&format!("{}: ", placeholder))
+            .get_input(&format!("{}: ", placeholder), "")
             .await?;
 
         let cleaned_answer: Vec<String> = answer.split(',').map(|s| s.trim().to_string()).collect();

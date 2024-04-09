@@ -47,7 +47,7 @@ impl CreateTemplateSpecificationService {
         match found_creatorly_file {
             Ok(found_template) => {
                 self.user_interaction_interface
-                    .print_success("creatorly.yml found, it will only update with the new placeholders")
+                    .print_success("creatorly.yml found, it will only update with the new placeholders, if new placeholders found.")
                     .await;
 
                 self.update_template_specification(found_template, files, upload_dir.clone())
@@ -201,7 +201,9 @@ mod test {
 
             async fn print(&self, message: &str);
 
-            async fn get_input(&self, prompt: &str) -> Result<String>;
+            async fn get_input(&self, prompt: &str, default: &str) -> Result<String>;
+
+            async fn get_selection(&self, prompt: &str, choices: &[String]) -> Result<String>;
         }
     }
 
@@ -217,15 +219,15 @@ mod test {
             .times(1);
         mock_user_interaction_interface
             .expect_get_input()
-            .with(eq("description: "))
+            .with(eq("description: "), eq(""))
             .return_const(Ok("description".to_string()));
         mock_user_interaction_interface
             .expect_get_input()
-            .with(eq("file_name: "))
+            .with(eq("file_name: "), eq(""))
             .return_const(Ok("file_name".to_string()));
         mock_user_interaction_interface
             .expect_get_input()
-            .with(eq("name: "))
+            .with(eq("name: "), eq(""))
             .return_const(Ok("name".to_string()));
         mock_user_interaction_interface
             .expect_print()
