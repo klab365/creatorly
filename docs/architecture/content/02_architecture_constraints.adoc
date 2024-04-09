@@ -1,4 +1,7 @@
 [[section-architecture-constraints]]
+= Architecture Constraints
+
+[[section-technical-constraints]]
 == Technical Constraints
 
 * Programming language: Rust

@@ -1,0 +1,28 @@
+[package]
+name = "template"
+edition = "2021"
+authors.workspace = true
+version.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+common = { path = "../common", features = ["cli"] }
+tokio = { workspace = true }
+async-trait = { workspace = true}
+clap = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9.17"
+indexmap = { version = "1.9.2", features = ["serde-1"] }
+walkdir = "2.3.2"
+liquid = "0.26.4"
+futures = "0.3.28"
+regex = "1.10.2"
+
+[dev-dependencies]
+mockall = { workspace = true }
+tempdir = { workspace = true }
+tempfile = { workspace = true }
+
+[features]
+cli = []
