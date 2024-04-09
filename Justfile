@@ -29,4 +29,4 @@ test: ## run the tests
 
 example: ## run the example
 	echo "Running example..."
-	cargo run -- generate local -t assets/example_project -d target/new_project
+	cargo run -- template generate local -t assets/example_project -d target/new_project

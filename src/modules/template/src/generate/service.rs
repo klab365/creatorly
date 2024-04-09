@@ -53,7 +53,7 @@ impl GenerateService {
             "found {} files on template project",
             template_configuration.file_list.files.len()
         );
-        self.user_interaction_interface.print(&msg).await;
+        self.user_interaction_interface.print_success(&msg).await;
 
         // parse answer for question
         self.parse_answer_for_questions(&mut template_configuration.template_specification)
