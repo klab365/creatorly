@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use common::core::errors::Result;
-use common::core::user_interaction_interface::UserInteractionInterface;
+use common::core::user_interaction_interface::UserInteraction;
 
 use crate::templatespecification::core::service::TemplateSpecificationService;
 use crate::templatespecification::core::template_configuration::TemplateConfiguration;
@@ -21,14 +21,14 @@ pub struct GenerateProjectInput {
 pub struct GenerateService {
     template_specification_service: Arc<TemplateSpecificationService>,
     template_engine: Arc<TemplateEngine>,
-    user_interaction_interface: Arc<dyn UserInteractionInterface>,
+    user_interaction_interface: Arc<dyn UserInteraction>,
 }
 
 impl GenerateService {
     pub fn new(
         template_specification_service: Arc<TemplateSpecificationService>,
         template_engine: Arc<TemplateEngine>,
-        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+        user_interaction_interface: Arc<dyn UserInteraction>,
     ) -> Self {
         Self {
             template_specification_service,

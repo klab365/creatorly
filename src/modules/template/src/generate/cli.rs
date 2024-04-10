@@ -1,8 +1,8 @@
-use clap::{Args, Command, FromArgMatches, Subcommand};
+use clap::{Args, FromArgMatches, Subcommand};
 
-use common::cli::cli_user_interaction_interface::CliUserInteractionInterface;
+use common::cli::cli_user_interaction_interface::CliUserInteraction;
 use common::core::errors::{Error, Result};
-use common::{cli::interface::ICommand, infrastructure::file_system::FileSystem};
+use common::{cli::command::Command, infrastructure::file_system::FileSystem};
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -14,7 +14,7 @@ use crate::templatespecification::core::template_engine::TemplateEngine;
 pub struct GenerateCliCommand {}
 
 #[async_trait::async_trait]
-impl ICommand for GenerateCliCommand {
+impl Command for GenerateCliCommand {
     fn get_name(&self) -> &'static str {
         "generate"
     }
@@ -24,7 +24,7 @@ impl ICommand for GenerateCliCommand {
             .map_err(|e| Error::new(format!("issue to parse generate args: {}", e)))?;
 
         let file_system = Arc::new(FileSystem {});
-        let cli_interface = Arc::new(CliUserInteractionInterface {});
+        let cli_interface = Arc::new(CliUserInteraction {});
         let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(
             file_system,
             cli_interface.clone(),
@@ -64,7 +64,7 @@ impl ICommand for GenerateCliCommand {
     }
 
     fn register_cli(&self, cli: clap::Command) -> clap::Command {
-        let mut generate_cli = Command::new(self.get_name())
+        let mut generate_cli = clap::Command::new(self.get_name())
             .about("Generate a project from a template")
             .arg_required_else_help(true);
 

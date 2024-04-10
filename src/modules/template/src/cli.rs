@@ -1,14 +1,14 @@
 use clap::Command;
+use common::cli::command::GroupCommands;
 use common::cli::functions::handle_subcommand;
-use common::cli::interface::{ICommand, IGroupCommands};
 use common::core::errors::Result;
 
 use crate::{check::cli::CheckCliCommand, create::cli::CreateCommand, generate::cli::GenerateCliCommand};
 
 pub struct TemplateGroupCommands {}
 
-impl IGroupCommands for TemplateGroupCommands {
-    fn get_commands(&self) -> Vec<Box<dyn ICommand>> {
+impl GroupCommands for TemplateGroupCommands {
+    fn get_commands(&self) -> Vec<Box<dyn common::cli::command::Command>> {
         vec![
             Box::new(CheckCliCommand {}),
             Box::new(CreateCommand {}),
@@ -18,7 +18,7 @@ impl IGroupCommands for TemplateGroupCommands {
 }
 
 #[async_trait::async_trait]
-impl ICommand for TemplateGroupCommands {
+impl common::cli::command::Command for TemplateGroupCommands {
     fn get_name(&self) -> &'static str {
         "template"
     }
