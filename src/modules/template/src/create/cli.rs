@@ -1,8 +1,8 @@
 use std::{path::PathBuf, sync::Arc};
 
-use clap::{Args, Command, FromArgMatches};
+use clap::{Args, FromArgMatches};
 use common::{
-    cli::cli_user_interaction_interface::CliUserInteractionInterface, cli::interface::ICommand, core::errors::Error,
+    cli::cli_user_interaction_interface::CliUserInteraction, cli::command::Command, core::errors::Error,
     core::errors::Result, infrastructure::file_system::FileSystem,
 };
 
@@ -19,7 +19,7 @@ struct CreateTemplateSpecificationArgs {
 }
 
 #[async_trait::async_trait]
-impl ICommand for CreateCommand {
+impl Command for CreateCommand {
     fn get_name(&self) -> &'static str {
         "create"
     }
@@ -36,7 +36,7 @@ impl ICommand for CreateCommand {
     }
 
     fn register_cli(&self, cli: clap::Command) -> clap::Command {
-        let mut create_cli = Command::new(self.get_name())
+        let mut create_cli = clap::Command::new(self.get_name())
             .about("Create different things")
             .arg_required_else_help(true);
 
@@ -47,7 +47,7 @@ impl ICommand for CreateCommand {
 
 async fn handle_create_template(template_args: CreateTemplateSpecificationArgs) -> Result<()> {
     let file_system = Arc::new(FileSystem::default());
-    let interface = Arc::new(CliUserInteractionInterface {});
+    let interface = Arc::new(CliUserInteraction {});
     let templatespecification_service =
         Arc::new(TemplateSpecificationService::with_local_file_loader(interface.clone()));
     let create_service =

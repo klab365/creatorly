@@ -1,5 +1,5 @@
 use crate::core::errors::Result;
-use crate::core::user_interaction_interface::UserInteractionInterface;
+use crate::core::user_interaction_interface::UserInteraction;
 use async_trait::async_trait;
 use dialoguer::{
     console::{style, Style},
@@ -7,9 +7,9 @@ use dialoguer::{
     Input, Select,
 };
 
-pub struct CliUserInteractionInterface {}
+pub struct CliUserInteraction {}
 
-impl CliUserInteractionInterface {
+impl CliUserInteraction {
     fn get_theme(&self) -> ColorfulTheme {
         ColorfulTheme {
             defaults_style: Style::new().for_stderr().cyan(),
@@ -39,7 +39,7 @@ impl CliUserInteractionInterface {
 }
 
 #[async_trait]
-impl UserInteractionInterface for CliUserInteractionInterface {
+impl UserInteraction for CliUserInteraction {
     async fn print_success(&self, message: &str) {
         println!("✅ {}", message);
     }

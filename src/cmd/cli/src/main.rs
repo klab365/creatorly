@@ -3,10 +3,11 @@
 use clap::{command, Args};
 use common::{
     cli::{
+        cli_user_interaction_interface::CliUserInteraction,
+        command::{Command, GroupCommands},
         functions::handle_subcommand,
-        interface::{ICommand, IGroupCommands},
     },
-    core::errors::Result,
+    core::{errors::Result, user_interaction_interface::UserInteraction},
 };
 use template::cli::TemplateGroupCommands;
 
@@ -17,7 +18,9 @@ async fn main() {
     let res = app.parse().await;
     match res {
         Ok(_) => {}
-        Err(_) => {
+        Err(e) => {
+            let cli = CliUserInteraction {};
+            cli.print_error(&e.to_string()).await;
             std::process::exit(1);
         }
     }
@@ -31,8 +34,8 @@ struct CliAppRootArgs {}
 
 struct CliApp {}
 
-impl IGroupCommands for CliApp {
-    fn get_commands(&self) -> Vec<Box<dyn ICommand>> {
+impl GroupCommands for CliApp {
+    fn get_commands(&self) -> Vec<Box<dyn Command>> {
         vec![Box::new(TemplateGroupCommands {})]
     }
 }

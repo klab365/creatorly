@@ -1,7 +1,7 @@
 use common::core::{
     errors::{Error, Result},
     interfaces::FileSystemInterface,
-    user_interaction_interface::UserInteractionInterface,
+    user_interaction_interface::UserInteraction,
 };
 use std::{path::PathBuf, sync::Arc};
 
@@ -14,14 +14,14 @@ use crate::templatespecification::core::{
 pub struct CreateTemplateSpecificationService {
     templatespecification_service: Arc<TemplateSpecificationService>,
     file_system: Arc<dyn FileSystemInterface>,
-    user_interaction_interface: Arc<dyn UserInteractionInterface>,
+    user_interaction_interface: Arc<dyn UserInteraction>,
 }
 
 impl CreateTemplateSpecificationService {
     pub fn new(
         templatespecification_service: Arc<TemplateSpecificationService>,
         file_system: Arc<dyn FileSystemInterface>,
-        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+        user_interaction_interface: Arc<dyn UserInteraction>,
     ) -> Self {
         Self {
             templatespecification_service,
@@ -130,7 +130,6 @@ impl CreateTemplateSpecificationService {
             }
         }
 
-        // todo: do it better
         placeholders.sort();
         placeholders.dedup();
         Ok(placeholders)
@@ -194,7 +193,7 @@ mod test {
         UserInteractionInterface {}
 
         #[async_trait]
-        impl UserInteractionInterface for UserInteractionInterface {
+        impl UserInteraction for UserInteractionInterface {
             async fn print_success(&self, message: &str);
 
             async fn print_error(&self, message: &str);

@@ -1,5 +1,5 @@
 use crate::core::interfaces::FileSystemInterface;
-use crate::core::{errors::Result, file::File};
+use crate::core::{errors::Error, errors::Result, file::File};
 use std::io::Write;
 use std::path::Path;
 use tokio::{
@@ -13,30 +13,46 @@ pub struct FileSystem {}
 #[async_trait::async_trait]
 impl FileSystemInterface for FileSystem {
     async fn clear_folder(&self, path: &Path) -> Result<()> {
-        tokio::fs::remove_dir_all(path).await.expect("issue to remove");
+        tokio::fs::remove_dir_all(path)
+            .await
+            .map_err(|e| Error::new(format!("issue to clear: {}", e)))?;
         Ok(())
     }
 
     async fn move_file(&self, source_file: &File, target_file: &File) -> Result<()> {
-        let target_dir = target_file
-            .path()
-            .parent()
-            .expect("issue to get dir")
-            .to_str()
-            .expect("issue to str");
+        let target_dir = target_file.path().parent();
+        if target_dir.is_none() {
+            return Err(Error::new("issue to get dir".into()));
+        }
 
+        let target_dir = target_dir.unwrap().to_str();
+        if target_dir.is_none() {
+            return Err(Error::new("issue to str".into()));
+        }
+
+        let target_dir = target_dir.unwrap();
         tokio::fs::create_dir_all(target_dir)
             .await
-            .expect("issue to create target directory");
+            .map_err(|e| Error::new(format!("issue to create target directory: {}", e)))?;
 
-        tokio::fs::copy(source_file, target_file).await.expect("issue to copy");
+        tokio::fs::copy(source_file, target_file)
+            .await
+            .map_err(|e| Error::new(format!("issue to move copy file: {}", e)))?;
 
         Ok(())
     }
 
     async fn read_file(&self, path: &File) -> Result<String> {
-        let content = tokio::fs::read_to_string(path).await.expect("issue to read file");
-        Ok(content)
+        let content_bytes = tokio::fs::read(path)
+            .await
+            .map_err(|e| Error::new(format!("issue to read file: {}", e)))?;
+        let content = std::str::from_utf8(&content_bytes);
+        let content = match content {
+            Ok(content) => content,
+            Err(_e) => "",
+        };
+
+        Ok(content.into())
     }
 
     async fn write_file(&self, path: &File, content: &str) -> Result<()> {
@@ -44,9 +60,11 @@ impl FileSystemInterface for FileSystem {
 
         tokio::fs::create_dir_all(dir)
             .await
-            .expect("issue to create target directory");
+            .map_err(|e| Error::new(format!("issue to create target directory:{}", e)))?;
 
-        tokio::fs::write(path, content).await.expect("issue to write");
+        tokio::fs::write(path, content)
+            .await
+            .map_err(|e| Error::new(format!("issue to write file: {}", e)))?;
 
         Ok(())
     }

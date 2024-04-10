@@ -1,7 +1,7 @@
-use super::interface::IGroupCommands;
+use super::command::GroupCommands;
 use crate::core::errors::Result;
 
-pub async fn handle_subcommand(subcommand: &dyn IGroupCommands, args: &clap::ArgMatches) -> Result<()> {
+pub async fn handle_subcommand(subcommand: &dyn GroupCommands, args: &clap::ArgMatches) -> Result<()> {
     let subcommand_name = args.subcommand_name();
     if subcommand_name.is_none() {
         return Err("No subcommand entered".into());

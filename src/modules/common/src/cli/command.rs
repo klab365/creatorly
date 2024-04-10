@@ -2,7 +2,7 @@ use crate::core::errors::Result;
 
 #[async_trait::async_trait]
 /// Represents a command that can be executed through a command-line interface.
-pub trait ICommand: Send + Sync {
+pub trait Command: Send + Sync {
     /// Returns the name of the command.
     fn get_name(&self) -> &'static str;
 
@@ -29,6 +29,6 @@ pub trait ICommand: Send + Sync {
     fn register_cli(&self, cli: clap::Command) -> clap::Command;
 }
 
-pub trait IGroupCommands: Send + Sync {
-    fn get_commands(&self) -> Vec<Box<dyn ICommand>>;
+pub trait GroupCommands: Send + Sync {
+    fn get_commands(&self) -> Vec<Box<dyn Command>>;
 }

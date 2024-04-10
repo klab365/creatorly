@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.5.1 - 10.04.2024
+
 * Fix Bug if only template is given and no subcommand
+* Fix Bug if images are in the template directory
+* Better error handling messages
 
 ## 1.5.0 - 09.04.2024
 

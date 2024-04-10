@@ -5,7 +5,7 @@ use super::template_configuration::TemplateConfiguration;
 use ::futures::future::join_all;
 use common::core::errors::Error;
 use common::core::interfaces::FileSystemInterface;
-use common::core::user_interaction_interface::UserInteractionInterface;
+use common::core::user_interaction_interface::UserInteraction;
 use common::core::{errors::Result, file::File};
 use std::{path::PathBuf, sync::Arc};
 
@@ -50,7 +50,7 @@ impl From<CheckTemplateResult> for Error {
 pub struct TemplateEngine {
     template_renderer: Arc<dyn TemplateRenderer>,
     file_system: Arc<dyn FileSystemInterface>,
-    user_interface: Arc<dyn UserInteractionInterface>,
+    user_interface: Arc<dyn UserInteraction>,
 }
 
 impl TemplateEngine {
@@ -58,7 +58,7 @@ impl TemplateEngine {
     pub fn new(
         template_renderer: Arc<dyn TemplateRenderer>,
         file_system: Arc<dyn FileSystemInterface>,
-        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+        user_interaction_interface: Arc<dyn UserInteraction>,
     ) -> Self {
         Self {
             template_renderer,
@@ -69,7 +69,7 @@ impl TemplateEngine {
 
     pub fn new_with_liquid_template_renderer(
         file_system: Arc<dyn FileSystemInterface>,
-        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+        user_interaction_interface: Arc<dyn UserInteraction>,
     ) -> Self {
         let template_renderer = Arc::new(LiquidTemplateRenderer {});
         Self::new(template_renderer, file_system, user_interaction_interface)

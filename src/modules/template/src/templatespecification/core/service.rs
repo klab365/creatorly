@@ -1,6 +1,6 @@
 use common::core::errors::{Error, Result};
 use common::core::file::File;
-use common::core::user_interaction_interface::UserInteractionInterface;
+use common::core::user_interaction_interface::UserInteraction;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -17,11 +17,11 @@ use super::template_specification::{TemplateSpecification, TemplateSpecification
 pub struct TemplateSpecificationService {
     folder_loader: Arc<dyn FileListLoader + Send + Sync>,
     configuration_loader: Arc<dyn ConfigurationLoader + Send + Sync>,
-    user_interaction_interface: Arc<dyn UserInteractionInterface>,
+    user_interaction_interface: Arc<dyn UserInteraction>,
 }
 
 impl TemplateSpecificationService {
-    pub fn with_local_file_loader(user_interaction_interface: Arc<dyn UserInteractionInterface>) -> Self {
+    pub fn with_local_file_loader(user_interaction_interface: Arc<dyn UserInteraction>) -> Self {
         let folder_loader = Arc::new(LocalFileListLoader::default());
         let configuration_loader = Arc::new(YamlConfigurationLoader::default());
 
@@ -33,7 +33,7 @@ impl TemplateSpecificationService {
     }
 
     pub fn with_git_file_loader(
-        user_interaction_interface: Arc<dyn UserInteractionInterface>,
+        user_interaction_interface: Arc<dyn UserInteraction>,
         remote_git_url: String,
         branch_name: String,
     ) -> Self {

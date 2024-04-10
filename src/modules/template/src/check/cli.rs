@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use clap::{Args, Command, FromArgMatches};
-use common::cli::cli_user_interaction_interface::CliUserInteractionInterface;
+use clap::{Args, FromArgMatches};
+use common::cli::cli_user_interaction_interface::CliUserInteraction;
 use common::core::errors::{Error, Result};
-use common::core::user_interaction_interface::UserInteractionInterface;
-use common::{cli::interface::ICommand, infrastructure::file_system::FileSystem};
+use common::core::user_interaction_interface::UserInteraction;
+use common::{cli::command::Command, infrastructure::file_system::FileSystem};
 
 use crate::templatespecification::core::service::TemplateSpecificationService;
 use crate::templatespecification::core::template_engine::TemplateEngine;
@@ -22,7 +22,7 @@ struct CheckCliArgs {
 }
 
 #[async_trait::async_trait]
-impl ICommand for CheckCliCommand {
+impl Command for CheckCliCommand {
     fn get_name(&self) -> &'static str {
         "check"
     }
@@ -32,7 +32,7 @@ impl ICommand for CheckCliCommand {
         let check_args = CheckCliArgs::from_arg_matches(args)
             .map_err(|e| Error::new(format!("issue to parse check args: {}", e)))?;
 
-        let user_interaction_interface = Arc::new(CliUserInteractionInterface {});
+        let user_interaction_interface = Arc::new(CliUserInteraction {});
         let file_system = Arc::new(FileSystem::default());
         let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(
             file_system,
@@ -80,7 +80,7 @@ impl ICommand for CheckCliCommand {
     }
 
     fn register_cli(&self, cli: clap::Command) -> clap::Command {
-        let mut check_cli = Command::new(self.get_name())
+        let mut check_cli = clap::Command::new(self.get_name())
             .about("Check a template")
             .arg_required_else_help(true);
 
