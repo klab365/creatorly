@@ -1,157 +1,81 @@
+use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
+
 /// The template specification. It contains the questions, which are asked.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct TemplateSpecification {
+    /// Represents the placeholder id. For example "CREATORLY".
+    #[serde(skip_serializing_if = "Option::is_none")]
+    placeholder_id: Option<String>,
+
+    /// Represents the placeholder delimiter. For example "." (CREATORLY.xyz).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    placeholder_delimiter: Option<String>,
+
     /// Represents a list of questions for a template specification.
-    pub placeholders: Vec<TemplateSpecificationItem>,
+    pub placeholders: IndexMap<String, TemplateSpecificationItemType>,
+
+    /// Represents the answers to the questions.
+    #[serde(skip_serializing, skip_deserializing)]
+    pub answers: IndexMap<String, String>,
 }
 
 impl TemplateSpecification {
-    pub const PREFIX: &'static str = "creatorly";
+    pub const PREFIX: &'static str = "CREATORLY";
+    pub const DELIMITER: &'static str = ".";
 
+    /// Creates a new instance of the template specification with the default placeholder id.
     pub fn new() -> Self {
         Self {
-            placeholders: Vec::new(),
+            placeholder_id: None,
+            placeholder_delimiter: None,
+            placeholders: IndexMap::new(),
+            answers: IndexMap::new(),
         }
+    }
+
+    /// Creates a new instance of the template specification with the given placeholder id.
+    pub fn from_id_delimiter(placeholder_id: String, delimeter: String) -> Self {
+        Self {
+            placeholder_id: Some(placeholder_id),
+            placeholder_delimiter: Some(delimeter),
+            placeholders: IndexMap::new(),
+            answers: IndexMap::new(),
+        }
+    }
+
+    pub fn get_placeholder_id(&self) -> String {
+        if self.placeholder_id.is_none() {
+            let placeholder_id = Self::PREFIX.to_string();
+            return placeholder_id;
+        }
+
+        self.placeholder_id.clone().unwrap()
+    }
+
+    pub fn get_placeholder_delimiter(&self) -> String {
+        if self.placeholder_delimiter.is_none() {
+            let placeholder_delimiter = Self::DELIMITER.to_string();
+            return placeholder_delimiter;
+        }
+
+        self.placeholder_delimiter.clone().unwrap()
     }
 }
 
 impl Default for TemplateSpecification {
     fn default() -> Self {
-        TemplateSpecification::new()
-    }
-}
-
-/// Represents an item in the template specification.
-#[derive(Debug, Clone, PartialEq)]
-pub struct TemplateSpecificationItem {
-    pub item: TemplateSpecificationItemType,
-    pub template_key: String,
-    pub answer: String,
-}
-
-impl TemplateSpecificationItem {
-    pub fn new(template_key: String, item: TemplateSpecificationItemType) -> Self {
-        Self {
-            item,
-            template_key,
-            answer: String::new(),
-        }
-    }
-
-    /// Returns the template key.
-    pub fn get_template_key(&self) -> &String {
-        &self.template_key
-    }
-
-    /// Returns the answer.
-    pub fn get_answer(&self) -> &String {
-        &self.answer
-    }
-
-    /// Sets the answer.
-    pub fn set_answer(&mut self, answer: String) {
-        self.answer = answer;
-    }
-
-    /// Returns the item.
-    pub fn get_item(&self) -> &TemplateSpecificationItemType {
-        &self.item
-    }
-
-    /// Returns the single choice, if the item is a single choice. Otherwise None.
-    pub fn get_single_choice(&self) -> Option<&String> {
-        match &self.item {
-            TemplateSpecificationItemType::SingleChoice(answer) => Some(answer),
-            _ => None,
-        }
-    }
-
-    /// Returns the multiple choice, if the item is a multiple choice. Otherwise None.
-    pub fn get_multiple_choice(&self) -> Option<&Vec<String>> {
-        match &self.item {
-            TemplateSpecificationItemType::MultipleChoice(answers) => Some(answers),
-            _ => None,
-        }
+        Self::new()
     }
 }
 
 /// The type of the template specification item.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[serde(untagged)]
 pub enum TemplateSpecificationItemType {
     /// A single choice item.
     SingleChoice(String),
 
     /// A multiple choice item.
     MultipleChoice(Vec<String>),
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_single_choice() {
-        // arrange & act
-        let mut sut = TemplateSpecification {
-            placeholders: Vec::new(),
-        };
-        sut.placeholders.push(TemplateSpecificationItem {
-            template_key: "project_name".to_string(),
-            item: TemplateSpecificationItemType::SingleChoice("DemoBoilerplate".to_string()),
-            answer: "DemoBoilerplate".to_string(),
-        });
-
-        // assert
-        assert_eq!(sut.placeholders.len(), 1);
-        assert_eq!(sut.placeholders[0].template_key, "project_name");
-        assert_eq!(
-            sut.placeholders[0].get_single_choice(),
-            Some(&String::from("DemoBoilerplate"))
-        );
-        assert_eq!(sut.placeholders[0].answer, "DemoBoilerplate");
-    }
-
-    #[test]
-    fn test_multiple_choice() {
-        // arrange & act
-        let mut sut = TemplateSpecification {
-            placeholders: Vec::new(),
-        };
-        sut.placeholders.push(TemplateSpecificationItem {
-            template_key: "licence".to_string(),
-            item: TemplateSpecificationItemType::MultipleChoice(vec!["MIT".to_string(), "GPL".to_string()]),
-            answer: "MIT".to_string(),
-        });
-
-        // assert
-        assert_eq!(sut.placeholders.len(), 1);
-        assert_eq!(sut.placeholders[0].template_key, "licence");
-        assert_eq!(sut.placeholders[0].answer, "MIT");
-        assert_eq!(
-            sut.placeholders[0].get_multiple_choice(),
-            Some(&vec![String::from("MIT"), String::from("GPL")])
-        );
-    }
-
-    #[test]
-    fn test_multiple_choice_should_be_invalid() {
-        // arrange & act
-        let mut sut = TemplateSpecification {
-            placeholders: Vec::new(),
-        };
-        sut.placeholders.push(TemplateSpecificationItem {
-            template_key: "licence".to_string(),
-            item: TemplateSpecificationItemType::MultipleChoice(vec!["MIT".to_string(), "GPL".to_string()]),
-            answer: "Apache".to_string(),
-        });
-
-        // assert
-        assert_eq!(sut.placeholders.len(), 1);
-        assert_eq!(sut.placeholders[0].template_key, "licence");
-        assert_eq!(sut.placeholders[0].answer, "Apache");
-        assert_eq!(
-            sut.placeholders[0].get_multiple_choice(),
-            Some(&vec![String::from("MIT"), String::from("GPL")])
-        );
-    }
 }

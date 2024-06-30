@@ -3,7 +3,7 @@
 
 === Generate
 
-For this tool, the `creatorly.yml` file must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs within the key `placeholders` in the `creatorly.yml` file can be used as a placeholder variable in all files and file paths. Each placeholder variable must be enclosed in `{{ creatorly.<placeholder_name> }}` in the files. As link:https://shopify.github.io/liquid/[Shopify-Liquid] is used as the template engine, the detailed rules can be found on the website.
+For this tool, the `creatorly.yml` file must be in the root directory of the template project. This file contains the configuration for the template project. Each of the key-value pairs within the key `placeholders` in the `creatorly.yml` file can be used as a placeholder variable in all files and file paths. A placeholder can look like `CREATORLY.<placeholder_name>`.
 
 Below is an example of a `creatorly.yml` file:
 
@@ -17,7 +17,7 @@ Below is an example of a `README.md` file that uses the `project_name` variable 
 
 [source,md]
 ----
-# Documentation {{ creatorly.project_name }}
+# Documentation  CREATORLY.project_name
 ----
 
 This then becomes after this tool is executed:
@@ -27,7 +27,7 @@ This then becomes after this tool is executed:
 # Documentation My Template Project
 ----
 
-TIP: Not only the content of the files can be rendered, but also the file name itself. For this purpose, a `{{ }}` block must be used in the file name as well as in the content of the file. Example the file `{{ creatorly.project_name }}.md` will be rendered to `My Template Project.md`, if the `project_name` variable is set to `My Template Project`.
+TIP: Not only the content of the files can be rendered, but also the file name itself. Example the file `CREATORLY.project_name.md` will be rendered to `My Template Project.md`, if the `project_name` variable is set to `My Template Project`.
 
 ==== Use the CLI
 
@@ -37,23 +37,18 @@ To generate a new project from a template, the following command can be executed
 
 [source,bash]
 ----
-    creatorly template generate local --template-path <template_path> --destination-path <destination_path>
+creatorly template generate local --template-path <template_path> --destination-path <destination_path>
 ----
 
 ===== Remote template project (git)
 
 [source,bash]
 ----
-    creatorly template generate git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
+creatorly template generate git --remote-path <remote_path> --branch <branch>  --destination-path <destination_path>
 ----
 
 TIP: If the git repository has submodules, they will be also cloned. If you want to use a private repository, then you need to make sure that you have access to the repo with the local git commands.
 
 == Create Commands
-
-tbd.
-
-
-== Check Commands
 
 tbd.

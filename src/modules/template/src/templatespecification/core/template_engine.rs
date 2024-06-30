@@ -1,4 +1,4 @@
-use crate::templatespecification::infrastructure::liquid_template_renderer::LiquidTemplateRenderer;
+use crate::templatespecification::infrastructure::regex_templaterenderer::RegexTemplateRenderer;
 
 use super::interfaces::TemplateRenderer;
 use super::template_configuration::TemplateConfiguration;
@@ -14,36 +14,6 @@ use std::{path::PathBuf, sync::Arc};
 pub struct RenderPushArgument {
     pub destination_path: PathBuf,
     pub template_configuration: TemplateConfiguration,
-}
-
-#[derive(Debug)]
-pub struct CheckTemplateArgs {
-    pub template_configuration: TemplateConfiguration,
-}
-
-#[derive(Default)]
-pub struct CheckTemplateResult {
-    pub issues: Vec<String>,
-}
-
-impl CheckTemplateResult {
-    pub fn new() -> Self {
-        Self { issues: vec![] }
-    }
-
-    pub fn add_issue(&mut self, issue: String) {
-        self.issues.push(issue);
-    }
-
-    pub fn is_valid(&self) -> bool {
-        self.issues.is_empty()
-    }
-}
-
-impl From<CheckTemplateResult> for Error {
-    fn from(res: CheckTemplateResult) -> Self {
-        Error::new(res.issues.join("\n"))
-    }
 }
 
 #[derive(Clone)]
@@ -67,18 +37,16 @@ impl TemplateEngine {
         }
     }
 
-    pub fn new_with_liquid_template_renderer(
+    pub fn new_with_default_template_renderer(
         file_system: Arc<dyn FileSystemInterface>,
         user_interaction_interface: Arc<dyn UserInteraction>,
     ) -> Self {
-        let template_renderer = Arc::new(LiquidTemplateRenderer {});
+        let template_renderer = Arc::new(RegexTemplateRenderer {});
         Self::new(template_renderer, file_system, user_interaction_interface)
     }
 
     /// render files and push it directly to the destination path (async with multiple threads - one thread per file)
     pub async fn render_and_push(self: &Arc<Self>, args: RenderPushArgument) -> Result<()> {
-        let now = std::time::Instant::now();
-
         let args = Arc::new(args);
         let mut handles = vec![];
         let files = args.template_configuration.file_list.files.clone();
@@ -93,42 +61,9 @@ impl TemplateEngine {
         }
 
         join_all(handles).await;
-        self.user_interface
-            .print(format!("🚀 Files rendered in {}ms", now.elapsed().as_millis()).as_str())
-            .await;
+        self.user_interface.print("🚀 Files rendered").await;
+
         Ok(())
-    }
-
-    pub async fn check_template(&self, args: &CheckTemplateArgs) -> Result<CheckTemplateResult> {
-        let mut res = CheckTemplateResult::new();
-
-        let files = args.template_configuration.file_list.files.clone();
-        for file in files.iter() {
-            let file_name = file.to_str();
-            let output_name = self
-                .template_renderer
-                .render(file_name, &args.template_configuration.template_specification);
-            match output_name {
-                Ok(_) => {}
-                Err(err) => res.add_issue(err.to_string()),
-            }
-
-            let content = self.file_system.read_file(file).await;
-            let Ok(content) = content else {
-                res.add_issue(format!("Error while reading file {}", file));
-                continue;
-            };
-
-            let rendered_content = self
-                .template_renderer
-                .render(&content, &args.template_configuration.template_specification);
-            match rendered_content {
-                Ok(_) => {}
-                Err(err) => res.add_issue(err.to_string()),
-            }
-        }
-
-        Ok(res)
     }
 
     /// process one file
@@ -189,6 +124,12 @@ impl TemplateEngine {
         target_file_path: &File,
         args: &RenderPushArgument,
     ) -> Result<()> {
+        // if the file is a binary, move it directly
+        if self.file_system.is_binary(file_name).await? {
+            self.file_system.move_file(file_name, target_file_path).await?;
+            return Ok(());
+        }
+
         let content = self.file_system.read_file(file_name).await?;
 
         let output = self

@@ -5,8 +5,7 @@ use common::core::errors::Result;
 use common::core::user_interaction_interface::UserInteraction;
 
 use crate::templatespecification::core::service::TemplateSpecificationService;
-use crate::templatespecification::core::template_configuration::TemplateConfiguration;
-use crate::templatespecification::core::template_engine::{CheckTemplateArgs, RenderPushArgument, TemplateEngine};
+use crate::templatespecification::core::template_engine::{RenderPushArgument, TemplateEngine};
 use crate::templatespecification::core::template_specification::TemplateSpecification;
 
 /// Represents the input parameters for generating a project.
@@ -47,8 +46,6 @@ impl GenerateService {
             .load_template_configuration(input_path.clone())
             .await?;
 
-        // check if the template is valid
-        self.check_template_configuration(&template_configuration).await?;
         let msg = format!(
             "found {} files on template project",
             template_configuration.file_list.files.len()
@@ -61,7 +58,7 @@ impl GenerateService {
 
         // render files and push it to the destination folder
         self.user_interaction_interface
-            .print("🚀 render files and push it to the destination folder")
+            .print("🚀 Render files and push it to the destination folder")
             .await;
         let args = RenderPushArgument {
             destination_path: input.destination_path,
@@ -81,21 +78,6 @@ impl GenerateService {
             .get_answers(template_specification)
             .await?;
 
-        Ok(())
-    }
-
-    async fn check_template_configuration(&self, templatespecification: &TemplateConfiguration) -> Result<()> {
-        self.user_interaction_interface
-            .print("🔎 check if the template is valid")
-            .await;
-        let check_template_args = CheckTemplateArgs {
-            template_configuration: templatespecification.clone(),
-        };
-        let res_check_template = self.template_engine.check_template(&check_template_args).await?;
-        if !res_check_template.is_valid() {
-            return Err(res_check_template.into());
-        }
-        self.user_interaction_interface.print_success("template is valid").await;
         Ok(())
     }
 }

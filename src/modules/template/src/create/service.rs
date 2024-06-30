@@ -6,9 +6,7 @@ use common::core::{
 use std::{path::PathBuf, sync::Arc};
 
 use crate::templatespecification::core::{
-    file_list::FileList,
-    service::TemplateSpecificationService,
-    template_specification::{TemplateSpecification, TemplateSpecificationItem},
+    file_list::FileList, service::TemplateSpecificationService, template_specification::TemplateSpecification,
 };
 
 pub struct CreateTemplateSpecificationService {
@@ -93,7 +91,7 @@ impl CreateTemplateSpecificationService {
                 .placeholders
                 .clone()
                 .into_iter()
-                .find(|p| p.template_key == *placeholder);
+                .find(|p| p.0 == *placeholder);
 
             if found_placeholder.is_none() {
                 let parsed_placeholder = self
@@ -101,7 +99,9 @@ impl CreateTemplateSpecificationService {
                     .get_default_answer(placeholder)
                     .await?;
 
-                found_template_specifiaction.placeholders.push(parsed_placeholder);
+                found_template_specifiaction
+                    .placeholders
+                    .insert(placeholder.clone(), parsed_placeholder);
             }
         }
 
@@ -117,8 +117,8 @@ impl CreateTemplateSpecificationService {
 
         for file in files.files.iter() {
             let file_content = self.file_system.read_file(file).await?;
-            let regex = regex::Regex::new(r"\{\{\s*creatorly\.(\w+)\s*\}\}")
-                .map_err(|err| Error::new(format!("Error in regex: {}", err)))?;
+            let regex_str = format!(r"\s*{}\.(\w+)\s*", TemplateSpecification::PREFIX);
+            let regex = regex::Regex::new(&regex_str).map_err(|err| Error::new(format!("Error in regex: {}", err)))?;
 
             // check file_path for placeholders
             for capture in regex.captures_iter(file.to_str()) {
@@ -141,7 +141,7 @@ impl CreateTemplateSpecificationService {
         if found_placeholders.is_empty() {
             return Err(Error::with_advice(
                 "No placeholders found".into(),
-                "Please add {{ creatorly.* }} to your files or file names".into(),
+                "Please add CREATORLY.* to your files or file names".into(),
             ));
         }
 
@@ -153,19 +153,15 @@ impl CreateTemplateSpecificationService {
         let found_placeholders = self.get_placeholder(files).await?;
 
         // get all answers
-        let mut parsed_template_specification_items: Vec<TemplateSpecificationItem> = vec![];
+        let mut parsed_template = TemplateSpecification::new();
         for placeholder in found_placeholders {
             let template_specification = self
                 .templatespecification_service
                 .get_default_answer(&placeholder)
                 .await?;
 
-            parsed_template_specification_items.push(template_specification);
+            parsed_template.placeholders.insert(placeholder, template_specification);
         }
-
-        let parsed_template = TemplateSpecification {
-            placeholders: parsed_template_specification_items,
-        };
 
         Ok(parsed_template)
     }
@@ -297,13 +293,15 @@ mod test {
 
     fn get_correct_example_dir() -> Result<tempdir::TempDir> {
         let tmp_dir = tempdir::TempDir::new("example").map_err(|_| Error::new("issue to create temp dir".into()))?;
+
         create_file(
-            tmp_dir.path().join("{{ creatorly.file_name }}.txt").to_str().unwrap(),
-            "{{ creatorly.name }} say {{ creatorly.description }}",
+            tmp_dir.path().join("CREATORLY.file_name.txt").to_str().unwrap(),
+            "CREATORLY.name say CREATORLY.description",
         )?;
+
         create_file(
-            tmp_dir.path().join("{{ creatorly.file_name }}.md").to_str().unwrap(),
-            "{{ creatorly.name }} say {{ creatorly.description }}",
+            tmp_dir.path().join("CREATORLY.file_name.md").to_str().unwrap(),
+            "CREATORLY.name say CREATORLY.description",
         )?;
 
         Ok(tmp_dir)
@@ -311,6 +309,7 @@ mod test {
 
     fn create_file(path: &str, content: &str) -> Result<std::fs::File> {
         let mut file = std::fs::File::create(path).map_err(|_| Error::new("issue to create file".into()))?;
+
         file.write_all(content.as_bytes())
             .map_err(|_| Error::new("issue to write file".into()))?;
 
