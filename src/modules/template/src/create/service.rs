@@ -163,9 +163,8 @@ impl CreateTemplateSpecificationService {
             parsed_template_specification_items.push(template_specification);
         }
 
-        let parsed_template = TemplateSpecification {
-            placeholders: parsed_template_specification_items,
-        };
+        let mut parsed_template = TemplateSpecification::new();
+        parsed_template.placeholders = parsed_template_specification_items;
 
         Ok(parsed_template)
     }

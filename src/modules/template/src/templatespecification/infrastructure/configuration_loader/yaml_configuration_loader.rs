@@ -58,7 +58,7 @@ mod tests {
     async fn test_load_configuration() {
         let mut yaml_config_file = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         yaml_config_file.push("resources/test");
-        yaml_config_file.push("test_template_spec.yml");
+        yaml_config_file.push("creatorly_test.yml");
 
         // arrange
         let sut = YamlConfigurationLoader {};

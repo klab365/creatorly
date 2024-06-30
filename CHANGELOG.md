@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+* Remove Liquid from the project and use the simple string.replace method to render.
+
 ## 1.5.1 - 10.04.2024
 
 * Fix Bug if only template is given and no subcommand

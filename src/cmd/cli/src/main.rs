@@ -28,7 +28,7 @@ async fn main() {
 
 #[derive(Args)]
 #[command(author, version)]
-#[command(about = "creatorly - a simple cli to generate projects from templates")]
+#[command(about = "creatorly - a simple cli to manage projects with different tasks.")]
 #[command(arg_required_else_help = true)]
 struct CliAppRootArgs {}
 

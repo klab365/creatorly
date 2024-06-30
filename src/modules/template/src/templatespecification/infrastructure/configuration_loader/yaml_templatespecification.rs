@@ -13,10 +13,19 @@ pub struct YamlTemplateSpecification {
     pub placeholders: IndexMap<String, Value>,
 }
 
+impl Default for YamlTemplateSpecification {
+    fn default() -> Self {
+        YamlTemplateSpecification {
+            placeholders: IndexMap::new(),
+        }
+    }
+}
+
 impl From<YamlTemplateSpecification> for TemplateSpecification {
     fn from(yaml_template_specification: YamlTemplateSpecification) -> Self {
         let mut template = TemplateSpecification::new();
 
+        // assign key value pairs to specs
         for (key, value) in yaml_template_specification.placeholders {
             match value {
                 Value::String(choice) => {
@@ -47,9 +56,7 @@ impl From<YamlTemplateSpecification> for TemplateSpecification {
 
 impl From<TemplateSpecification> for YamlTemplateSpecification {
     fn from(val: TemplateSpecification) -> YamlTemplateSpecification {
-        let mut yaml_template_specification = YamlTemplateSpecification {
-            placeholders: IndexMap::new(),
-        };
+        let mut yaml_template_specification = YamlTemplateSpecification::default();
 
         for question in val.placeholders {
             match question.item {
@@ -77,9 +84,7 @@ mod tests {
 
     #[test]
     fn test_yaml_template_specification_to_template_spec() {
-        let mut yaml_template_specification = YamlTemplateSpecification {
-            placeholders: IndexMap::new(),
-        };
+        let mut yaml_template_specification = YamlTemplateSpecification::default();
         yaml_template_specification
             .placeholders
             .insert("project_name".to_string(), Value::String("DemoBoilerplate".to_string()));
@@ -114,9 +119,7 @@ mod tests {
 
     #[test]
     fn test_template_specification_from_yaml_template_specification() {
-        let mut yaml_template_specification = YamlTemplateSpecification {
-            placeholders: IndexMap::new(),
-        };
+        let mut yaml_template_specification = YamlTemplateSpecification::default();
         yaml_template_specification
             .placeholders
             .insert("project_name".to_string(), Value::String("DemoBoilerplate".to_string()));

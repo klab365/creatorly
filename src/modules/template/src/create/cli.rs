@@ -37,7 +37,7 @@ impl Command for CreateCommand {
 
     fn register_cli(&self, cli: clap::Command) -> clap::Command {
         let mut create_cli = clap::Command::new(self.get_name())
-            .about("Create different things")
+            .about("Create creatorly.yml file with the given template file")
             .arg_required_else_help(true);
 
         create_cli = CreateTemplateSpecificationArgs::augment_args(create_cli);

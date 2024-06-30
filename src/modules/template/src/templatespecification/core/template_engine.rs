@@ -1,4 +1,4 @@
-use crate::templatespecification::infrastructure::liquid_template_renderer::LiquidTemplateRenderer;
+use crate::templatespecification::infrastructure::stringreplace_templaterenderer::StringReplaceRenderer;
 
 use super::interfaces::TemplateRenderer;
 use super::template_configuration::TemplateConfiguration;
@@ -67,11 +67,11 @@ impl TemplateEngine {
         }
     }
 
-    pub fn new_with_liquid_template_renderer(
+    pub fn new_with_default_template_renderer(
         file_system: Arc<dyn FileSystemInterface>,
         user_interaction_interface: Arc<dyn UserInteraction>,
     ) -> Self {
-        let template_renderer = Arc::new(LiquidTemplateRenderer {});
+        let template_renderer = Arc::new(StringReplaceRenderer {});
         Self::new(template_renderer, file_system, user_interaction_interface)
     }
 
@@ -97,38 +97,6 @@ impl TemplateEngine {
             .print(format!("🚀 Files rendered in {}ms", now.elapsed().as_millis()).as_str())
             .await;
         Ok(())
-    }
-
-    pub async fn check_template(&self, args: &CheckTemplateArgs) -> Result<CheckTemplateResult> {
-        let mut res = CheckTemplateResult::new();
-
-        let files = args.template_configuration.file_list.files.clone();
-        for file in files.iter() {
-            let file_name = file.to_str();
-            let output_name = self
-                .template_renderer
-                .render(file_name, &args.template_configuration.template_specification);
-            match output_name {
-                Ok(_) => {}
-                Err(err) => res.add_issue(err.to_string()),
-            }
-
-            let content = self.file_system.read_file(file).await;
-            let Ok(content) = content else {
-                res.add_issue(format!("Error while reading file {}", file));
-                continue;
-            };
-
-            let rendered_content = self
-                .template_renderer
-                .render(&content, &args.template_configuration.template_specification);
-            match rendered_content {
-                Ok(_) => {}
-                Err(err) => res.add_issue(err.to_string()),
-            }
-        }
-
-        Ok(res)
     }
 
     /// process one file

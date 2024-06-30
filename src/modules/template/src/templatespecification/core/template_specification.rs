@@ -1,23 +1,30 @@
 /// The template specification. It contains the questions, which are asked.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TemplateSpecification {
+    /// Represents the placeholder id. For example "CREATORLY".
+    pub placeholder_id: Option<String>,
+
     /// Represents a list of questions for a template specification.
     pub placeholders: Vec<TemplateSpecificationItem>,
 }
 
 impl TemplateSpecification {
-    pub const PREFIX: &'static str = "creatorly";
+    pub const PREFIX: &'static str = "CREATORLY";
 
+    /// Creates a new instance of the template specification with the default placeholder id.
     pub fn new() -> Self {
         Self {
+            placeholder_id: Some(TemplateSpecification::PREFIX.to_string()),
             placeholders: Vec::new(),
         }
     }
-}
 
-impl Default for TemplateSpecification {
-    fn default() -> Self {
-        TemplateSpecification::new()
+    /// Creates a new instance of the template specification with the specified placeholder id.
+    pub fn new_with_id(placeholder_id: String) -> Self {
+        Self {
+            placeholder_id: Some(placeholder_id),
+            placeholders: Vec::new(),
+        }
     }
 }
 
@@ -92,9 +99,7 @@ mod tests {
     #[test]
     fn test_single_choice() {
         // arrange & act
-        let mut sut = TemplateSpecification {
-            placeholders: Vec::new(),
-        };
+        let mut sut = TemplateSpecification::new();
         sut.placeholders.push(TemplateSpecificationItem {
             template_key: "project_name".to_string(),
             item: TemplateSpecificationItemType::SingleChoice("DemoBoilerplate".to_string()),
@@ -114,9 +119,7 @@ mod tests {
     #[test]
     fn test_multiple_choice() {
         // arrange & act
-        let mut sut = TemplateSpecification {
-            placeholders: Vec::new(),
-        };
+        let mut sut = TemplateSpecification::new();
         sut.placeholders.push(TemplateSpecificationItem {
             template_key: "licence".to_string(),
             item: TemplateSpecificationItemType::MultipleChoice(vec!["MIT".to_string(), "GPL".to_string()]),
@@ -136,9 +139,7 @@ mod tests {
     #[test]
     fn test_multiple_choice_should_be_invalid() {
         // arrange & act
-        let mut sut = TemplateSpecification {
-            placeholders: Vec::new(),
-        };
+        let mut sut = TemplateSpecification::new();
         sut.placeholders.push(TemplateSpecificationItem {
             template_key: "licence".to_string(),
             item: TemplateSpecificationItemType::MultipleChoice(vec!["MIT".to_string(), "GPL".to_string()]),
