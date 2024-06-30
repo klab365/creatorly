@@ -16,36 +16,6 @@ pub struct RenderPushArgument {
     pub template_configuration: TemplateConfiguration,
 }
 
-#[derive(Debug)]
-pub struct CheckTemplateArgs {
-    pub template_configuration: TemplateConfiguration,
-}
-
-#[derive(Default)]
-pub struct CheckTemplateResult {
-    pub issues: Vec<String>,
-}
-
-impl CheckTemplateResult {
-    pub fn new() -> Self {
-        Self { issues: vec![] }
-    }
-
-    pub fn add_issue(&mut self, issue: String) {
-        self.issues.push(issue);
-    }
-
-    pub fn is_valid(&self) -> bool {
-        self.issues.is_empty()
-    }
-}
-
-impl From<CheckTemplateResult> for Error {
-    fn from(res: CheckTemplateResult) -> Self {
-        Error::new(res.issues.join("\n"))
-    }
-}
-
 #[derive(Clone)]
 pub struct TemplateEngine {
     template_renderer: Arc<dyn TemplateRenderer>,
@@ -77,8 +47,6 @@ impl TemplateEngine {
 
     /// render files and push it directly to the destination path (async with multiple threads - one thread per file)
     pub async fn render_and_push(self: &Arc<Self>, args: RenderPushArgument) -> Result<()> {
-        let now = std::time::Instant::now();
-
         let args = Arc::new(args);
         let mut handles = vec![];
         let files = args.template_configuration.file_list.files.clone();
@@ -94,8 +62,9 @@ impl TemplateEngine {
 
         join_all(handles).await;
         self.user_interface
-            .print(format!("🚀 Files rendered in {}ms", now.elapsed().as_millis()).as_str())
+            .print(format!("🚀 Files rendered").as_str())
             .await;
+
         Ok(())
     }
 

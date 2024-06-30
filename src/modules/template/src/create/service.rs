@@ -117,7 +117,8 @@ impl CreateTemplateSpecificationService {
 
         for file in files.files.iter() {
             let file_content = self.file_system.read_file(file).await?;
-            let regex = regex::Regex::new(r"\{\{\s*creatorly\.(\w+)\s*\}\}")
+            let regex_str = format!(r"\s*{}\.(\w+)\s*", TemplateSpecification::PREFIX);
+            let regex = regex::Regex::new(&regex_str)
                 .map_err(|err| Error::new(format!("Error in regex: {}", err)))?;
 
             // check file_path for placeholders
@@ -141,7 +142,7 @@ impl CreateTemplateSpecificationService {
         if found_placeholders.is_empty() {
             return Err(Error::with_advice(
                 "No placeholders found".into(),
-                "Please add {{ creatorly.* }} to your files or file names".into(),
+                "Please add CREATORLY.* to your files or file names".into(),
             ));
         }
 
@@ -297,12 +298,12 @@ mod test {
     fn get_correct_example_dir() -> Result<tempdir::TempDir> {
         let tmp_dir = tempdir::TempDir::new("example").map_err(|_| Error::new("issue to create temp dir".into()))?;
         create_file(
-            tmp_dir.path().join("{{ creatorly.file_name }}.txt").to_str().unwrap(),
-            "{{ creatorly.name }} say {{ creatorly.description }}",
+            tmp_dir.path().join("CREATORLY.file_name.txt").to_str().unwrap(),
+            "CREATORLY.name say CREATORLY.description",
         )?;
         create_file(
-            tmp_dir.path().join("{{ creatorly.file_name }}.md").to_str().unwrap(),
-            "{{ creatorly.name }} say {{ creatorly.description }}",
+            tmp_dir.path().join("CREATORLY.file_name.md").to_str().unwrap(),
+            "CREATORLY.name say CREATORLY.description",
         )?;
 
         Ok(tmp_dir)

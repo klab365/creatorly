@@ -58,7 +58,7 @@ impl GenerateService {
 
         // render files and push it to the destination folder
         self.user_interaction_interface
-            .print("🚀 render files and push it to the destination folder")
+            .print("🚀 Render files and push it to the destination folder")
             .await;
         let args = RenderPushArgument {
             destination_path: input.destination_path,
