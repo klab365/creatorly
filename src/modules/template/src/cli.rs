@@ -3,17 +3,13 @@ use common::cli::command::GroupCommands;
 use common::cli::functions::handle_subcommand;
 use common::core::errors::Result;
 
-use crate::{check::cli::CheckCliCommand, create::cli::CreateCommand, generate::cli::GenerateCliCommand};
+use crate::{create::cli::CreateCommand, generate::cli::GenerateCliCommand};
 
 pub struct TemplateGroupCommands {}
 
 impl GroupCommands for TemplateGroupCommands {
     fn get_commands(&self) -> Vec<Box<dyn common::cli::command::Command>> {
-        vec![
-            Box::new(CheckCliCommand {}),
-            Box::new(CreateCommand {}),
-            Box::new(GenerateCliCommand {}),
-        ]
+        vec![Box::new(CreateCommand {}), Box::new(GenerateCliCommand {})]
     }
 }
 

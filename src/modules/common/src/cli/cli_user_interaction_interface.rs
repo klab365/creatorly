@@ -1,4 +1,4 @@
-use crate::core::errors::Result;
+use crate::core::errors::{Error, Result};
 use crate::core::user_interaction_interface::UserInteraction;
 use async_trait::async_trait;
 use dialoguer::{
@@ -30,10 +30,6 @@ impl CliUserInteraction {
             unchecked_item_prefix: style("⬚".to_string()).for_stderr().magenta(),
             picked_item_prefix: style("❯".to_string()).for_stderr().green(),
             unpicked_item_prefix: style(" ".to_string()).for_stderr(),
-            #[cfg(feature = "fuzzy-select")]
-            fuzzy_cursor_style: Style::new().for_stderr().black().on_white(),
-            #[cfg(feature = "fuzzy-select")]
-            fuzzy_match_highlight_style: Style::new().for_stderr().bold(),
         }
     }
 }
@@ -54,11 +50,12 @@ impl UserInteraction for CliUserInteraction {
 
     async fn get_input(&self, prompt: &str, default: &str) -> Result<String> {
         let theme = self.get_theme();
+        let default = default.to_string();
         let input = Input::with_theme(&theme)
             .with_prompt(prompt)
-            .with_initial_text(default)
+            .default(default)
             .interact_text()
-            .unwrap();
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(input)
     }
@@ -70,7 +67,7 @@ impl UserInteraction for CliUserInteraction {
             .items(choices)
             .default(0)
             .interact()
-            .unwrap();
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(choices[selection].to_string())
     }

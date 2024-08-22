@@ -1,1 +1,1 @@
-Symlink file with the content: {{ creatorly.project_name }}
+Symlink file with the content: CREATORLY.project_name

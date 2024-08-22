@@ -46,11 +46,8 @@ impl FileSystemInterface for FileSystem {
         let content_bytes = tokio::fs::read(path)
             .await
             .map_err(|e| Error::new(format!("issue to read file: {}", e)))?;
-        let content = std::str::from_utf8(&content_bytes);
-        let content = match content {
-            Ok(content) => content,
-            Err(_e) => "",
-        };
+        let content =
+            std::str::from_utf8(&content_bytes).map_err(|e| Error::new(format!("issue to convert to utf8: {}", e)))?;
 
         Ok(content.into())
     }
@@ -90,6 +87,16 @@ impl FileSystemInterface for FileSystem {
 
         file.write_all(&buffer).await.expect("issue to write to file");
         Ok(())
+    }
+
+    async fn is_binary(&self, path: &File) -> Result<bool> {
+        let res = self.read_file(path).await;
+
+        if res.is_err() {
+            return Ok(true);
+        }
+
+        Ok(false)
     }
 }
 

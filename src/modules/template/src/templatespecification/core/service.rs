@@ -11,7 +11,7 @@ use crate::templatespecification::infrastructure::folder_loader::local_file_load
 use super::file_list::FileList;
 use super::interfaces::{ConfigurationLoader, FileListLoader};
 use super::template_configuration::TemplateConfiguration;
-use super::template_specification::{TemplateSpecification, TemplateSpecificationItem, TemplateSpecificationItemType};
+use super::template_specification::{TemplateSpecification, TemplateSpecificationItemType};
 
 /// This struct represents the service for template specifications.
 pub struct TemplateSpecificationService {
@@ -68,9 +68,11 @@ impl TemplateSpecificationService {
         template_specification: TemplateSpecification,
     ) -> Result<()> {
         let path = path.join("creatorly.yml");
+
         self.configuration_loader
             .save_configuration(&path, template_specification)
             .await?;
+
         Ok(())
     }
 
@@ -110,37 +112,32 @@ impl TemplateSpecificationService {
 
     /// get the answer of the questions
     pub async fn get_answers(&self, template_specification: &mut TemplateSpecification) -> Result<()> {
-        for template_specification_item in &mut template_specification.placeholders {
-            self.parse_answer(template_specification_item).await?;
-        }
+        template_specification.answers.clear();
+        for (key, template_specification_item) in &template_specification.placeholders {
+            let answer = match &template_specification_item {
+                TemplateSpecificationItemType::SingleChoice(choice) => {
+                    let prompt = format!("{}: ", key);
+                    let mut answer = self.user_interaction_interface.get_input(&prompt, choice).await?;
+                    if answer.is_empty() {
+                        answer = choice.clone();
+                    }
 
-        Ok(())
-    }
-
-    async fn parse_answer(&self, template_specification_item: &mut TemplateSpecificationItem) -> Result<()> {
-        match &template_specification_item.get_item() {
-            TemplateSpecificationItemType::SingleChoice(choice) => {
-                let prompt = format!("{}: ", template_specification_item.template_key);
-                let answer = self.user_interaction_interface.get_input(&prompt, choice).await?;
-                if answer.is_empty() {
-                    template_specification_item.set_answer(choice.to_string());
-                    return Ok(());
+                    answer
                 }
+                TemplateSpecificationItemType::MultipleChoice(choices) => {
+                    let prompt = format!("{}: ", key);
+                    self.user_interaction_interface.get_selection(&prompt, choices).await?
+                }
+            };
 
-                template_specification_item.set_answer(answer);
-            }
-            TemplateSpecificationItemType::MultipleChoice(choices) => {
-                let prompt = format!("{}: ", template_specification_item.template_key);
-                let answer = self.user_interaction_interface.get_selection(&prompt, choices).await?;
-                template_specification_item.set_answer(answer);
-            }
+            template_specification.answers.insert(key.clone(), answer.to_string());
         }
 
         Ok(())
     }
 
     /// get the default answer of the questions
-    pub async fn get_default_answer(&self, placeholder: &str) -> Result<TemplateSpecificationItem> {
+    pub async fn get_default_answer(&self, placeholder: &str) -> Result<TemplateSpecificationItemType> {
         let answer = self
             .user_interaction_interface
             .get_input(&format!("{}: ", placeholder), "")
@@ -149,14 +146,8 @@ impl TemplateSpecificationService {
         let cleaned_answer: Vec<String> = answer.split(',').map(|s| s.trim().to_string()).collect();
         let item = match cleaned_answer.len() {
             0 => Err(Error::new("No answer provided".into())),
-            1 => Ok(TemplateSpecificationItem::new(
-                placeholder.to_string(),
-                TemplateSpecificationItemType::SingleChoice(cleaned_answer[0].clone()),
-            )),
-            _ => Ok(TemplateSpecificationItem::new(
-                placeholder.to_string(),
-                TemplateSpecificationItemType::MultipleChoice(cleaned_answer.clone()),
-            )),
+            1 => Ok(TemplateSpecificationItemType::SingleChoice(cleaned_answer[0].clone())),
+            _ => Ok(TemplateSpecificationItemType::MultipleChoice(cleaned_answer.clone())),
         };
 
         let item = item?;

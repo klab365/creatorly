@@ -25,7 +25,7 @@ impl Command for GenerateCliCommand {
 
         let file_system = Arc::new(FileSystem {});
         let cli_interface = Arc::new(CliUserInteraction {});
-        let template_engine = Arc::new(TemplateEngine::new_with_liquid_template_renderer(
+        let template_engine = Arc::new(TemplateEngine::new_with_default_template_renderer(
             file_system,
             cli_interface.clone(),
         ));

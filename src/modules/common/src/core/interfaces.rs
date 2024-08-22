@@ -27,4 +27,7 @@ pub trait FileSystemInterface: Send + Sync {
 
     /// write line to file
     async fn write_line_to_file(&self, path: &File, content: String) -> Result<()>;
+
+    /// check if the file is an image
+    async fn is_binary(&self, path: &File) -> Result<bool>;
 }
