@@ -1,7 +1,10 @@
 [[section_installation]]
 == Installation
 
+[IMPORTANT]
+====
 creatorly should currently run on linux.
+====
 
 To install `creatorly` you can run the following command:
 

@@ -1,33 +1,55 @@
 set quiet
 
-build: ## build the code
+CMD := if path_exists('/.dockerenv') == "false" { 'docker run --rm -v $(pwd):/workspaces/creatorly -w /workspaces/creatorly rust-toolchain cargo' } else { 'cargo' }
+CMD_TTY := if path_exists('/.dockerenv') == "false" { 'docker run -it --rm -v $(pwd):/app -w /app rust-toolchain cargo' } else { 'cargo' }
+
+# build the docker image for ci
+build-docker id:
+    echo "Building Docker image..."
+    docker build -t rust-toolchain -f .devcontainer/Dockerfile --build-arg UID={{ id }} .
+
+# build the code
+build:
     echo "Building..."
-    cargo build
+    {{ CMD }} build
 
-release: ## build for release
-    cargo build --release
+# build for release
+release version='0.0.0' *ARGS='':
+    echo "Building for release V{{ version }}"
+    sed -i 's/^version = ".*"$/version = "{{ version }}"/' Cargo.toml
+    {{ CMD }} build --release {{ARGS}}
 
-run: ## run the code
-    echo "Running..."
-    cargo run --
+check-format:
+    echo "Checking formatting..."
+    {{ CMD }} fmt --all -- --check
 
-format: ## format the code
+# format the code
+format:
     echo "Formatting..."
-    cargo fmt --all
+    {{ CMD }} fmt --all
 
-lint: ## lint the code
+# lint the code
+lint:
     echo "Linting..."
-    cargo clippy --all-targets --all-features -- -D warnings
+    {{ CMD }} clippy --all-targets --all-features -- -D warnings
 
-fix: ## fix the code
+# fix the code
+fix:
     echo "Fixing..."
-    cargo fix
+    {{ CMD }} fix
 
-test: ## run the tests
+# run the tests
+test:
     echo "Testing..."
-    cargo test
+    {{ CMD }} test
 
-example: ## run the example
+# generate coverage
+coverage:
+    echo "Generating coverage..."
+    {{ CMD }} llvm-cov --lcov --output-path lcov.info
+
+# run the example
+example:
     echo "Running example..."
     rm -rf target/new_project
-    cargo run -- template generate local -t assets/example_project -d target/new_project
+    {{ CMD_TTY }} run -- template generate local -t assets/example_project -d target/new_project
