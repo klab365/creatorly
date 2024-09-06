@@ -27,7 +27,7 @@ jobs:
         run: just build-docker $(id -u)
 
       - name: Build CLI tool
-        run: just release {{ env.creatorly_version }} --target ${{ matrix.target }}
+        run: just release ${{ env.creatorly_version }} --target ${{ matrix.target }}
 
       - name: Create release
         uses: softprops/action-gh-release@v1
