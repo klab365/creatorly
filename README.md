@@ -10,6 +10,8 @@ Creatorly is a project to generate repository from template. Addionally, it set 
 
 ## Installation
 
+### Linux
+
 ```bash
 curl https://raw.githubusercontent.com/BuriKizilkaya/creatorly/main/install.sh | bash
 ```
@@ -27,7 +29,6 @@ Here are some documentations about the project:
 
 To release a new version, follow these steps:
 
-1. Update the version in `Cargo.toml`
 2. Adjust `CHANGELOG.md`
 3. Commit the changes and create a new PR
-4. Once the PR is merged, create a git tag with the version number and push it to the repository
+4. Once the PR is merged, create a git tag with the version number and push it to the repository. After that the pipeline will assign the version number to the release.

@@ -4,15 +4,15 @@
   "name": "creatorly-devcontainer",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "args": {
+      "UID": "1000"
+    }
   },
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/guiyomh/features/just:0": {}
   },
-  "runArgs": [
-    "--rm"
-  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -22,7 +22,8 @@
         "Swellaby.vscode-rust-test-adapter",
         "eamodio.gitlens",
         "asciidoctor.asciidoctor-vscode",
-        "EditorConfig.EditorConfig"
+        "EditorConfig.EditorConfig",
+        "github.vscode-github-actions"
       ]
     }
   }

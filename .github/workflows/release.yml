@@ -12,22 +12,22 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         target: [x86_64-unknown-linux-musl]
+
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          target: ${{ matrix.target }}
+      - name: Install just
+        uses: extractions/setup-just@v2
 
       - name: Extract version number
         id: extract_version
         run: echo "creatorly_version=$(echo ${{ github.ref }} | sed 's/refs\/tags\/V\(.*\)/\1/')" >> $GITHUB_ENV
 
+      - name: Install Docker for local builds
+        run: just build-docker $(id -u)
+
       - name: Build CLI tool
-        run: cargo build --release --target ${{ matrix.target }}
+        run: just release {{ env.creatorly_version }} --target ${{ matrix.target }}
 
       - name: Create release
         uses: softprops/action-gh-release@v1

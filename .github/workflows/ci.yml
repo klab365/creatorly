@@ -10,43 +10,29 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_fmt_clippy_test:
+  ci_build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install stable components
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+      - uses: extractions/setup-just@v2
+
+      - name: Install Docker for local builds
+        run: just build-docker $(id -u)
 
       - name: Run rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: just check-format
 
       - name: Run clippy
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --verbose --release -- -D warnings
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --verbose
-
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+        run: just lint
 
       - name: Generate code coverage
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        run: just coverage
+
+      - name: Dry-Run release
+        run: just release 0.0.0 --target x86_64-unknown-linux-musl
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v1
