@@ -39,21 +39,17 @@ impl TemplateSpecification {
     }
 
     pub fn get_placeholder_id(&self) -> String {
-        if self.placeholder_id.is_none() {
-            let placeholder_id = Self::PREFIX.to_string();
-            return placeholder_id;
+        match self.placeholder_id {
+            Some(ref id) => id.clone(),
+            None => Self::PREFIX.to_string(),
         }
-
-        self.placeholder_id.clone().unwrap()
     }
 
     pub fn get_placeholder_delimiter(&self) -> String {
-        if self.placeholder_delimiter.is_none() {
-            let placeholder_delimiter = Self::DELIMITER.to_string();
-            return placeholder_delimiter;
+        match self.placeholder_delimiter {
+            Some(ref delimeter) => delimeter.clone(),
+            None => Self::DELIMITER.to_string(),
         }
-
-        self.placeholder_delimiter.clone().unwrap()
     }
 }
 

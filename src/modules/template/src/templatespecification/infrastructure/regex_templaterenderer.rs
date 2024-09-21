@@ -21,11 +21,7 @@ impl TemplateRenderer for RegexTemplateRenderer {
                 key
             );
 
-            if !output.contains(&replacable_string) {
-                continue;
-            }
-
-            let regex = Regex::new(&format!(r"\b{}\b", regex::escape(&replacable_string)))
+            let regex = Regex::new(&regex::escape(&replacable_string).to_string())
                 .map_err(|e| Error::new(format!("Error creating regex: {}", e)))?;
 
             output = regex.replace_all(&output, answer.as_str()).to_string();
@@ -52,8 +48,27 @@ mod tests {
 
         // act
         let output = sut.render("Hello CREATORLY.name!", &data, &answers).unwrap();
-
         assert_eq!(output, "Hello Max!");
+
+        let output = sut.render("Hello CREATORLY.name_test!", &data, &answers).unwrap();
+        assert_eq!(output, "Hello Max_test!");
+    }
+
+    #[test]
+    fn render_should_not_render_when_delimeter_is_underscore_but_placeholder_is_dot() {
+        let sut = RegexTemplateRenderer {};
+        let mut data = TemplateSpecification::from_id_delimiter("CREATORLY".to_string(), "_".to_string());
+        let mut answers = HashMap::new();
+        let template_item = TemplateSpecificationItemType::SingleChoice("Max".to_string());
+        data.placeholders.insert("name".to_string(), template_item);
+        answers.insert("name".to_string(), "Max".to_string());
+
+        // act
+        let output = sut.render("Hello CREATORLY.name_test!", &data, &answers).unwrap();
+        assert_eq!(output, "Hello CREATORLY.name_test!");
+
+        let output = sut.render("Hello CREATORLY_name_test", &data, &answers).unwrap();
+        assert_eq!(output, "Hello Max_test");
     }
 
     #[test]
@@ -140,5 +155,21 @@ mod tests {
             .render("Hello KlabTestFramework.ProjectName.Core!", &data, &answers)
             .unwrap();
         assert_eq!(output1, "Hello SuperDuper.Core!");
+    }
+
+    #[test]
+    fn render_should_return_path() {
+        let sut = RegexTemplateRenderer {};
+        let mut data = TemplateSpecification::from_id_delimiter("creatorly".to_string(), ".".to_string());
+        let mut answers = HashMap::new();
+        let item = TemplateSpecificationItemType::SingleChoice("Max".to_string());
+        data.placeholders.insert("name".to_string(), item);
+        answers.insert("name".to_string(), "superduper".to_string());
+
+        // act & assert
+        let output1 = sut
+            .render("/core/creatorly.name/docs/hello.txt", &data, &answers)
+            .unwrap();
+        assert_eq!(output1, "/core/superduper/docs/hello.txt");
     }
 }
