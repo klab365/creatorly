@@ -36,7 +36,7 @@ lint:
 # fix the code
 fix:
     echo "Fixing..."
-    {{ CMD }} fix
+    {{ CMD }} fix --allow-staged
 
 # run the tests
 test:

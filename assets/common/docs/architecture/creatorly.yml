@@ -1,0 +1,5 @@
+placeholder_id: "creatorly"
+placeholder_delimiter: "-"
+placeholders:
+  arch_doc_name: "Architecture Documentation"
+  project_name: "Dummy Project"

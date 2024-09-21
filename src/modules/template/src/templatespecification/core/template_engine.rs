@@ -1,19 +1,30 @@
 use crate::templatespecification::infrastructure::regex_templaterenderer::RegexTemplateRenderer;
 
 use super::interfaces::TemplateRenderer;
-use super::template_configuration::TemplateConfiguration;
+use super::template_configuration::{TemplateConfiguration, TemplateConfigurationItem};
 use ::futures::future::join_all;
 use common::core::errors::Error;
+use common::core::errors::Result;
 use common::core::interfaces::FileSystemInterface;
 use common::core::user_interaction_interface::UserInteraction;
-use common::core::{errors::Result, file::File};
+use std::collections::HashMap;
+use std::path::Path;
 use std::{path::PathBuf, sync::Arc};
 
 /// Struct for the function of the template engine
 #[derive(Clone)]
 pub struct RenderPushArgument {
+    pub input_path: PathBuf,
     pub destination_path: PathBuf,
     pub template_configuration: TemplateConfiguration,
+}
+
+struct RenderArgument {
+    file: PathBuf,
+    template: TemplateConfigurationItem,
+    answers: HashMap<String, String>,
+    input_path: PathBuf,
+    destination_path: PathBuf,
 }
 
 #[derive(Clone)]
@@ -49,105 +60,114 @@ impl TemplateEngine {
     pub async fn render_and_push(self: &Arc<Self>, args: RenderPushArgument) -> Result<()> {
         let args = Arc::new(args);
         let mut handles = vec![];
-        let files = args.template_configuration.file_list.files.clone();
-        for file in files.into_iter() {
-            let cloned_self = Arc::clone(self);
-            let cloned_args = args.clone();
-            // spawn a new thread for each file, there is no implement a mutex for the file system ;)
-            let handle = tokio::spawn(async move {
-                let _ = cloned_self.process_file(&file, cloned_args).await;
-            });
-            handles.push(handle);
+
+        // clear the destination folder
+        self.file_system.clear_folder(&args.destination_path).await?;
+
+        let templates = args.template_configuration.templates.clone();
+        for template in templates.into_iter() {
+            let cloned_template = template.clone();
+
+            for file in template.file_list.into_iter() {
+                let cloned_self = Arc::clone(self);
+                let args = RenderArgument {
+                    file: file.clone(),
+                    template: cloned_template.clone(),
+                    answers: args.template_configuration.answers.clone(),
+                    input_path: args.input_path.clone(),
+                    destination_path: args.destination_path.clone(),
+                };
+
+                // spawn a new thread for each file, there is no implement a mutex for the file system ;)
+                let handle = tokio::spawn(async move {
+                    let _ = cloned_self.process_file(args).await;
+                });
+
+                handles.push(handle);
+            }
         }
 
         join_all(handles).await;
-        self.user_interface.print("🚀 Files rendered").await;
 
         Ok(())
     }
 
     /// process one file
     /// first it will render the filename and then the content of the file line by line
-    async fn process_file(&self, file: &File, args: Arc<RenderPushArgument>) -> Result<()> {
-        let target_file_name = self.render_file_name(file, &args).await?;
+    async fn process_file(&self, args: RenderArgument) -> Result<()> {
+        let target_file_name = self.render_file_name(&args).await?;
 
-        self.render_file_content(file, &target_file_name, &args).await?;
+        self.render_file_content(&target_file_name, &args).await?;
 
         Ok(())
     }
 
     /// render the file name if it contains template token
-    async fn render_file_name(&self, file_name: &File, render_args: &RenderPushArgument) -> Result<File> {
-        let input_root_path = render_args
-            .template_configuration
-            .file_list
-            .root_path
-            .as_path()
-            .to_str();
-
-        let Some(input_root_path) = input_root_path else {
+    async fn render_file_name(&self, arg: &RenderArgument) -> Result<String> {
+        let Some(input_root_path) = arg.input_path.as_path().to_str() else {
             return Err(Error::new(format!(
-                "Error while rendering file name of file {}",
-                file_name
+                "Input path don't exist {}",
+                arg.input_path.display()
             )));
         };
 
-        let Some(destination_path) = render_args.destination_path.as_path().to_str() else {
-            return Err(Error::new(format!("Destination path don't exist {}", file_name)));
+        let Some(destination_path) = arg.destination_path.as_path().to_str() else {
+            return Err(Error::new(format!(
+                "Destination path don't exist {}",
+                arg.file.display()
+            )));
         };
 
         let renderd_file_name_result = self.template_renderer.render(
-            file_name.to_str(),
-            &render_args.template_configuration.template_specification,
+            arg.file.to_str().unwrap(),
+            &arg.template.template_specification,
+            &arg.answers,
         );
 
-        let rendered_file_name = match renderd_file_name_result {
-            Ok(renderd_file_name) => File::from(renderd_file_name),
+        let rendered_file_name: PathBuf = match renderd_file_name_result {
+            Ok(renderd_file_name) => PathBuf::from(renderd_file_name),
             Err(error) => {
                 self.user_interface
-                    .print_error(format!("While rendering path {}: {}", file_name, error).as_str())
+                    .print_error(format!("While rendering path {}: {}", arg.file.display(), error).as_str())
                     .await;
-                file_name.clone()
+
+                arg.file.clone()
             }
         };
 
-        let renderd_file_name = rendered_file_name.replace(input_root_path, destination_path);
-        self.file_system.write_file(&renderd_file_name, "").await?;
-
-        Ok(renderd_file_name)
+        let rendered_file_name_str = rendered_file_name.to_str().unwrap();
+        let rendered_file_name = rendered_file_name_str.replace(input_root_path, destination_path);
+        Ok(rendered_file_name)
     }
 
     /// render the file content line by line
-    async fn render_file_content(
-        &self,
-        file_name: &File,
-        target_file_path: &File,
-        args: &RenderPushArgument,
-    ) -> Result<()> {
+    async fn render_file_content(&self, target_file_path: impl AsRef<Path>, args: &RenderArgument) -> Result<()> {
         // if the file is a binary, move it directly
-        if self.file_system.is_binary(file_name).await? {
-            self.file_system.move_file(file_name, target_file_path).await?;
+        if self.file_system.is_binary(&args.file).await? {
+            self.file_system
+                .move_file(&args.file, target_file_path.as_ref())
+                .await?;
             return Ok(());
         }
 
-        let content = self.file_system.read_file(file_name).await?;
+        let content = self.file_system.read_file(&args.file).await?;
 
-        let output = self
-            .template_renderer
-            .render(content.as_str(), &args.template_configuration.template_specification);
+        let output =
+            self.template_renderer
+                .render(content.as_str(), &args.template.template_specification, &args.answers);
 
         let rendered_content = match output {
             Ok(rendered_content) => rendered_content,
             Err(error) => {
                 self.user_interface
-                    .print_error(format!("While rendering content of path {}: {}", file_name, error).as_str())
+                    .print_error(format!("While rendering content of path {}: {}", args.file.display(), error).as_str())
                     .await;
                 content.clone()
             }
         };
 
         self.file_system
-            .write_file(target_file_path, rendered_content.as_str())
+            .write_file(target_file_path.as_ref(), rendered_content.as_str())
             .await?;
 
         Ok(())

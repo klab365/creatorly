@@ -14,10 +14,6 @@ pub struct TemplateSpecification {
 
     /// Represents a list of questions for a template specification.
     pub placeholders: IndexMap<String, TemplateSpecificationItemType>,
-
-    /// Represents the answers to the questions.
-    #[serde(skip_serializing, skip_deserializing)]
-    pub answers: IndexMap<String, String>,
 }
 
 impl TemplateSpecification {
@@ -30,7 +26,6 @@ impl TemplateSpecification {
             placeholder_id: None,
             placeholder_delimiter: None,
             placeholders: IndexMap::new(),
-            answers: IndexMap::new(),
         }
     }
 
@@ -40,7 +35,6 @@ impl TemplateSpecification {
             placeholder_id: Some(placeholder_id),
             placeholder_delimiter: Some(delimeter),
             placeholders: IndexMap::new(),
-            answers: IndexMap::new(),
         }
     }
 

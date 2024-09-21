@@ -1,7 +1,5 @@
-use std::path::Path;
-
 use crate::core::errors::Result;
-use crate::core::file::File;
+use std::path::Path;
 
 #[cfg(test)]
 use mockall::automock;
@@ -14,20 +12,17 @@ pub trait FileSystemInterface: Send + Sync {
     async fn clear_folder(&self, path: &Path) -> Result<()>;
 
     /// move file from source to target
-    async fn move_file(&self, source_path: &File, target_path: &File) -> Result<()>;
+    async fn move_file(&self, source_path: &Path, target_path: &Path) -> Result<()>;
 
     /// read file
-    async fn read_file(&self, path: &File) -> Result<String>;
+    async fn read_file(&self, path: &Path) -> Result<String>;
 
     /// write file
-    async fn write_file(&self, path: &File, content: &str) -> Result<()>;
+    async fn write_file(&self, path: &Path, content: &str) -> Result<()>;
 
     /// read file buffered
-    async fn read_file_buffered(&self, path: &File) -> Result<Vec<String>>;
-
-    /// write line to file
-    async fn write_line_to_file(&self, path: &File, content: String) -> Result<()>;
+    async fn read_file_buffered(&self, path: &Path) -> Result<Vec<String>>;
 
     /// check if the file is an image
-    async fn is_binary(&self, path: &File) -> Result<bool>;
+    async fn is_binary(&self, path: &Path) -> Result<bool>;
 }
