@@ -9,6 +9,9 @@ use std::sync::Arc;
 use crate::generate::service::{GenerateProjectInput, GenerateService};
 use crate::templatespecification::core::service::TemplateSpecificationService;
 use crate::templatespecification::core::template_engine::TemplateEngine;
+use crate::templatespecification::infrastructure::configuration_loader::yaml_configuration_loader::YamlConfigurationLoader;
+use crate::templatespecification::infrastructure::folder_loader::git_files_loader::GitFileListLoader;
+use crate::templatespecification::infrastructure::folder_loader::local_file_loader::LocalFileListLoader;
 
 /// Represents a command for generating a project from a template.
 pub struct GenerateCliCommand {}
@@ -37,7 +40,13 @@ impl Command for GenerateCliCommand {
                     input_path: Some(local_create.template_path),
                     destination_path: local_create.destination_path,
                 };
-                let template_specification_service = Arc::new(TemplateSpecificationService::with_local_file_loader(
+
+                let folder_loader = Arc::new(LocalFileListLoader::default());
+                let configuration_loader = Arc::new(YamlConfigurationLoader::default());
+
+                let template_specification_service = Arc::new(TemplateSpecificationService::new(
+                    folder_loader,
+                    configuration_loader,
                     cli_interface.clone(),
                 ));
                 let service =
@@ -49,11 +58,14 @@ impl Command for GenerateCliCommand {
                     input_path: git_create.input_path,
                     destination_path: git_create.destination_path,
                 };
-                let template_specification_service = Arc::new(TemplateSpecificationService::with_git_file_loader(
+                let folder_loader = Arc::new(GitFileListLoader::new(git_create.remote_path, git_create.branch));
+                let configuration_loader = Arc::new(YamlConfigurationLoader::default());
+                let template_specification_service = Arc::new(TemplateSpecificationService::new(
+                    folder_loader,
+                    configuration_loader,
                     cli_interface.clone(),
-                    git_create.remote_path,
-                    git_create.branch,
                 ));
+
                 let service =
                     GenerateService::new(template_specification_service, template_engine, cli_interface.clone());
                 service.generate_project(input).await?;

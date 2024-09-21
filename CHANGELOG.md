@@ -4,22 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 2.0.1
 
-## 2.0.0 - 06.09.2024
+* Optimize domain template configuration
+
+## 2.0.0
 
 ### Changed
 
 * Optimize Build Infrastructure
 * Remove Liquid from the project and use the simple string.replace method to render.
 
-## 1.5.1 - 10.04.2024
+## 1.5.1
 
 * Fix Bug if only template is given and no subcommand
 * Fix Bug if images are in the template directory
 * Better error handling messages
 
-## 1.5.0 - 09.04.2024
+## 1.5.0
 
 * Move all template commands to the template module
 * New CLI experience with a new crate

@@ -1,3 +1,0 @@
-#[cfg(feature = "cli")]
-pub mod cli;
-mod service;

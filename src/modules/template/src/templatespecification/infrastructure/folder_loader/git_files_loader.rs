@@ -1,11 +1,9 @@
-use common::core::{
-    errors::{Error, Result},
-    file::File,
-};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+
+use common::core::errors::{Error, Result};
 use tokio::process::Command;
 
-use crate::templatespecification::core::{file_list::FileList, interfaces::FileListLoader};
+use crate::templatespecification::core::interfaces::FileListLoader;
 
 use super::local_file_loader::LocalFileListLoader;
 
@@ -109,10 +107,10 @@ impl GitFileListLoader {
     /// # Returns
     ///
     /// The filtered list of files with the hidden `.git` folder removed.
-    fn remove_hidden_git_folder(&self, files: FileList) -> FileList {
+    fn remove_hidden_git_folder(&self, files: Vec<PathBuf>) -> Vec<PathBuf> {
         let mut filtered_files = files;
 
-        filtered_files.files.retain(|file| !file.contains(File::from(".git/")));
+        filtered_files.retain(|file| !file.components().any(|c| c.as_os_str() == ".git"));
 
         filtered_files
     }
@@ -120,21 +118,16 @@ impl GitFileListLoader {
 
 #[async_trait::async_trait]
 impl FileListLoader for GitFileListLoader {
-    async fn load(&self, path: Option<PathBuf>) -> Result<FileList> {
+    async fn load(&self, path: &Path) -> Result<Vec<PathBuf>> {
         let repo_name = self.get_git_name();
 
-        let download_path = match path {
-            Some(path) => path,
-            None => PathBuf::from(Self::DOWNLOAD_FOLDER_PATH),
-        };
-
-        let download_path = download_path.join(repo_name);
+        let download_path = path.join(repo_name);
         self.try_remove_cloned_folder(&download_path).await?;
         self.execute_git_clone(&self.remote_git_url, download_path.clone())
             .await?;
 
         let file_list_loader = LocalFileListLoader::default();
-        let files = file_list_loader.load(Some(download_path)).await?;
+        let files = file_list_loader.load(&download_path).await?;
         let filterd_files = self.remove_hidden_git_folder(files);
 
         Ok(filterd_files)
@@ -199,23 +192,22 @@ mod tests {
         );
 
         let path = PathBuf::from_str("/tmp").unwrap();
-        let files: Result<FileList> = sut.load(Some(path)).await;
+        let files = sut.load(&path).await;
 
         assert!(files.is_ok());
-        assert!(!files.clone().unwrap().files.is_empty());
+        assert!(!files.clone().unwrap().is_empty());
 
         // check if all .git folder is removed
         let found_files_indexes = files
             .clone()
             .unwrap()
-            .files
             .iter()
             .enumerate()
-            .filter(|file| file.1.contains(File::from(".git/")))
+            .filter(|file| file.1.starts_with(".git/"))
             .map(|(index, _)| index)
             .collect::<Vec<_>>();
 
         assert_eq!(found_files_indexes.len(), 0);
-        assert_eq!(files.unwrap().files.len(), 1);
+        assert_eq!(files.unwrap().len(), 1);
     }
 }

@@ -1,7 +1,9 @@
-use crate::templatespecification::core::file_list::FileList;
 use crate::templatespecification::core::template_specification::TemplateSpecification;
 use common::core::errors::Result;
-use std::path::{Path, PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 #[cfg(test)]
 use mockall::automock;
@@ -39,13 +41,13 @@ pub trait FileListLoader {
     /// # Returns
     ///
     /// Returns a `Result` containing the loaded `FileList` if successful, or an error message as a `String` if unsuccessful.
-    async fn load(&self, path: Option<PathBuf>) -> Result<FileList>;
+    async fn load(&self, path: &Path) -> Result<Vec<PathBuf>>;
 }
 
 #[cfg_attr(test, automock)]
 /// This interface is used to render the input with the given template specification
 /// The input can be the content of a file or a path to a file
 pub trait TemplateRenderer: Send + Sync {
-    /// render the input with the given template specification
-    fn render(&self, input: &str, config: &TemplateSpecification) -> Result<String>;
+    /// render the input with the given template specification and answers
+    fn render(&self, input: &str, config: &TemplateSpecification, answers: &HashMap<String, String>) -> Result<String>;
 }
